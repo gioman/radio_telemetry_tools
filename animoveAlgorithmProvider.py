@@ -12,7 +12,7 @@ class animoveAlgorithmProvider(AlgorithmProvider):
 
     def __init__(self):
         AlgorithmProvider.__init__(self)
-        self.alglist = [mcp(),href()]
+        self.alglist = [mcp(), href()]
 
     def getDescription(self):
         return "AniMove (MCP and Kernel analysis UD)"
@@ -21,7 +21,8 @@ class animoveAlgorithmProvider(AlgorithmProvider):
         return "AniMove"
 
     def getIcon(self):
-        return  QtGui.QIcon(os.path.dirname(__file__) + "/icons/animalmove.png")
+        return  QtGui.QIcon(os.path.dirname(__file__)
+                        + "/icons/animalmove.png")
 
     def _loadAlgorithms(self):
         self.algs = self.alglist
