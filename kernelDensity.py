@@ -8,6 +8,7 @@ from sextante.parameters.ParameterVector import ParameterVector
 from sextante.core.QGisLayers import QGisLayers
 from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
+from sextante.parameters.ParameterSelection import ParameterSelection
 
 try:  # qgis 1.8 sextante 1.08
     from sextante.ftools import ftools_utils
@@ -25,11 +26,25 @@ from sextante.core.SextanteUtils import SextanteUtils
 
 class href(AnimoveAlgorithm):
 
+    # Input names
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
     FIELD = "FIELD"
     PERCENT = "PERCENT"
     RESOLUTION = "RESOLUTION"
+    BW_METHOD = "BW_METHOD"
+    BW_VALUE = "BW_VALUE"
+
+    # Bandwidth method indexes
+    BW_METHOD_SCOTT = 0
+    BW_METHOD_SILVERMAN = 1
+    BW_METHOD_CUSTOM = 2
+
+    # Bandwidth method name array
+    BW_METHODS = []
+    BW_METHODS.insert(BW_METHOD_SCOTT, "Scott's Rule")
+    BW_METHODS.insert(BW_METHOD_SILVERMAN, "Silverman's Rule")
+    BW_METHODS.insert(BW_METHOD_CUSTOM, "Custom value")
 
     def getIcon(self):
         return QtGui.QIcon(os.path.dirname(__file__) + "/icons/href.png")
@@ -43,10 +58,17 @@ class href(AnimoveAlgorithm):
         inputLayer = QGisLayers.getObjectFromUri(
                             self.getParameterValue(href.INPUT))
         resolution = self.getParameterValue(href.RESOLUTION)
+        bw_method = self.getParameterValue(href.BW_METHOD)
 
         # Adjust parameters if necessary
         if perc > 100:
             perc = 100
+        if bw_method == href.BW_METHOD_SCOTT:
+            bandwidth = 'scott'
+        elif bw_method == href.BW_METHOD_SILVERMAN:
+            bandwidth = 'silverman'
+        elif bw_method == href.BW_METHOD_CUSTOM:
+            bandwidth = self.getParameterValue(href.BW_VALUE)
 
         # Get layer info and create the writer for the output layer
         epsg = inputLayer.crs().srsid()
@@ -96,6 +118,7 @@ class href(AnimoveAlgorithm):
             positions = np.vstack([X.ravel(), Y.ravel()])
             values = np.vstack([xPoints, yPoints])
             kernel = stats.kde.gaussian_kde(values)
+            kernel.set_bandwidth(bandwidth)
             Z = np.reshape(kernel(positions).T, X.T.shape)
 
             # Write kernel to GeoTIFF
@@ -164,10 +187,15 @@ class href(AnimoveAlgorithm):
         self.addParameter(ParameterTableField(href.FIELD, "Group fixes by",
                             href.INPUT))
         self.addParameter(ParameterNumber(href.PERCENT,
-                            "Percentage of Utilisation Distribution(UD)",
+                            "Percentage of Utilization Distribution (UD)",
                             5, 100, 95))
         self.addParameter(ParameterNumber(href.RESOLUTION,
                     "Output raster resolution", 1, None, 50))
+        self.addParameter(ParameterSelection(href.BW_METHOD,
+                    "Bandwidth method", href.BW_METHODS))
+        self.addParameter(ParameterNumber(href.BW_VALUE,
+                    "Bandwidth value (only used  if 'Custom value' bandwidth "
+                    "method selected)", 0.0, None, 0.2))
         self.addOutput(OutputVector(href.OUTPUT, "Kernel Density Estimation"))
 
     def to_geotiff(self, fname, xmin, xmax, ymin, ymax, X, Y, Z, epsg):
