@@ -29,6 +29,7 @@ class href(AnimoveAlgorithm):
     OUTPUT = "OUTPUT"
     FIELD = "FIELD"
     PERCENT = "PERCENT"
+    RESOLUTION = "RESOLUTION"
 
     def getIcon(self):
         return QtGui.QIcon(os.path.dirname(__file__) + "/icons/href.png")
@@ -41,7 +42,7 @@ class href(AnimoveAlgorithm):
         field = self.getParameterValue(href.FIELD)
         inputLayer = QGisLayers.getObjectFromUri(
                             self.getParameterValue(href.INPUT))
-        resolution = 50
+        resolution = self.getParameterValue(href.RESOLUTION)
 
         # Adjust parameters if necessary
         if perc > 100:
@@ -165,6 +166,8 @@ class href(AnimoveAlgorithm):
         self.addParameter(ParameterNumber(href.PERCENT,
                             "Percentage of Utilisation Distribution(UD)",
                             5, 100, 95))
+        self.addParameter(ParameterNumber(href.RESOLUTION,
+                    "Output raster resolution", 1, None, 50))
         self.addOutput(OutputVector(href.OUTPUT, "Kernel Density Estimation"))
 
     def to_geotiff(self, fname, xmin, xmax, ymin, ymax, X, Y, Z, epsg):
