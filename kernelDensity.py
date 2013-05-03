@@ -24,7 +24,7 @@ import datetime
 from sextante.core.SextanteUtils import SextanteUtils
 
 
-class href(AnimoveAlgorithm):
+class kernelDensity(AnimoveAlgorithm):
 
     # Input names
     INPUT = "INPUT"
@@ -47,28 +47,29 @@ class href(AnimoveAlgorithm):
     BW_METHODS.insert(BW_METHOD_CUSTOM, "Custom value")
 
     def getIcon(self):
-        return QtGui.QIcon(os.path.dirname(__file__) + "/icons/href.png")
+        return QtGui.QIcon(os.path.dirname(__file__)
+                           + "/icons/kernelDensity.png")
 
     def processAlgorithm(self, progress):
         currentPath = os.path.dirname(os.path.abspath(__file__))
 
         # Get parameters
-        perc = self.getParameterValue(href.PERCENT)
-        field = self.getParameterValue(href.FIELD)
+        perc = self.getParameterValue(kernelDensity.PERCENT)
+        field = self.getParameterValue(kernelDensity.FIELD)
         inputLayer = QGisLayers.getObjectFromUri(
-                            self.getParameterValue(href.INPUT))
-        resolution = self.getParameterValue(href.RESOLUTION)
-        bw_method = self.getParameterValue(href.BW_METHOD)
+                            self.getParameterValue(kernelDensity.INPUT))
+        resolution = self.getParameterValue(kernelDensity.RESOLUTION)
+        bw_method = self.getParameterValue(kernelDensity.BW_METHOD)
 
         # Adjust parameters if necessary
         if perc > 100:
             perc = 100
-        if bw_method == href.BW_METHOD_SCOTT:
+        if bw_method == kernelDensity.BW_METHOD_SCOTT:
             bandwidth = 'scott'
-        elif bw_method == href.BW_METHOD_SILVERMAN:
+        elif bw_method == kernelDensity.BW_METHOD_SILVERMAN:
             bandwidth = 'silverman'
-        elif bw_method == href.BW_METHOD_CUSTOM:
-            bandwidth = self.getParameterValue(href.BW_VALUE)
+        elif bw_method == kernelDensity.BW_METHOD_CUSTOM:
+            bandwidth = self.getParameterValue(kernelDensity.BW_VALUE)
 
         # Get layer info and create the writer for the output layer
         epsg = inputLayer.crs().srsid()
@@ -85,7 +86,7 @@ class href(AnimoveAlgorithm):
         fields = [QgsField("ID", QVariant.String),
                   QgsField("Area", QVariant.Double),
                   QgsField("Perim", QVariant.Double)]
-        writer = self.getWriter(href.OUTPUT, fields,
+        writer = self.getWriter(kernelDensity.OUTPUT, fields,
                     QGis.WKBMultiLineString, inputProvider.crs())
 
         # Prepare percentage progress and start
@@ -182,21 +183,21 @@ class href(AnimoveAlgorithm):
     def defineCharacteristics(self):
         self.name = "Kernel Density Estimation"
         self.group = "Tools"
-        self.addParameter(ParameterVector(href.INPUT, "Input layer",
-                            ParameterVector.VECTOR_TYPE_POINT))
-        self.addParameter(ParameterTableField(href.FIELD, "Group fixes by",
-                            href.INPUT))
-        self.addParameter(ParameterNumber(href.PERCENT,
-                            "Percentage of Utilization Distribution (UD)",
-                            5, 100, 95))
-        self.addParameter(ParameterNumber(href.RESOLUTION,
+        self.addParameter(ParameterVector(kernelDensity.INPUT, "Input layer",
+                    ParameterVector.VECTOR_TYPE_POINT))
+        self.addParameter(ParameterTableField(kernelDensity.FIELD,
+                    "Group fixes by", kernelDensity.INPUT))
+        self.addParameter(ParameterNumber(kernelDensity.PERCENT,
+                    "Percentage of Utilization Distribution (UD)", 5, 100, 95))
+        self.addParameter(ParameterNumber(kernelDensity.RESOLUTION,
                     "Output raster resolution", 1, None, 50))
-        self.addParameter(ParameterSelection(href.BW_METHOD,
-                    "Bandwidth method", href.BW_METHODS))
-        self.addParameter(ParameterNumber(href.BW_VALUE,
+        self.addParameter(ParameterSelection(kernelDensity.BW_METHOD,
+                    "Bandwidth method", kernelDensity.BW_METHODS))
+        self.addParameter(ParameterNumber(kernelDensity.BW_VALUE,
                     "Bandwidth value (only used  if 'Custom value' bandwidth "
                     "method selected)", 0.0, None, 0.2))
-        self.addOutput(OutputVector(href.OUTPUT, "Kernel Density Estimation"))
+        self.addOutput(OutputVector(kernelDensity.OUTPUT,
+                    "Kernel Density Estimation"))
 
     def to_geotiff(self, fname, xmin, xmax, ymin, ymax, X, Y, Z, epsg):
         '''
