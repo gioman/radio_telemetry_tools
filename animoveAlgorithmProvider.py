@@ -5,7 +5,7 @@ from PyQt4 import QtGui
 from sextante.core.AlgorithmProvider import AlgorithmProvider
 
 from mcp import mcp
-from href import href
+from kernelDensity import href
 
 
 class animoveAlgorithmProvider(AlgorithmProvider):
