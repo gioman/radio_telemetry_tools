@@ -9,6 +9,7 @@ from sextante.core.QGisLayers import QGisLayers
 from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
 from sextante.parameters.ParameterSelection import ParameterSelection
+from sextante.core.SextanteLog import SextanteLog
 
 try:  # qgis 1.8 sextante 1.08
     from sextante.ftools import ftools_utils
@@ -122,6 +123,10 @@ class kernelDensity(AnimoveAlgorithm):
             kernel.set_bandwidth(bandwidth)
             Z = np.reshape(kernel(positions).T, X.T.shape)
 
+            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Bandwidth value for '"
+                                 + str(value.toString().trimmed()) + "': "
+                                 + str(kernel.covariance_factor()))
+
             # Write kernel to GeoTIFF
             raster_name = (str(name) + '_' + str(perc) + '_' +
                         str(value.toString()) + '_' +
@@ -136,9 +141,6 @@ class kernelDensity(AnimoveAlgorithm):
                 cmd = "gdal_contour "
             basename = "c" + str(n)
             shpFile = os.path.join(currentPath, basename + ".shp")
-            print (cmd + currentPath + "/raster_output/"
-                          + raster_name + " -a values -i 10 "
-                          + shpFile)
             os.system(cmd + currentPath + "/raster_output/"
                           + raster_name + " -a values -i 10 "
                           + shpFile)
@@ -205,6 +207,7 @@ class kernelDensity(AnimoveAlgorithm):
         '''
         driver = gdal.GetDriverByName("GTiff")
         out = driver.Create(fname, len(X), len(Y), 1, gdal.GDT_Float64)
+
         # pixel sizes
         xps = (xmax - xmin) / float(len(X))
         yps = (ymax - ymin) / float(len(Y))
