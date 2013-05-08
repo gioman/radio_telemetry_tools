@@ -9,7 +9,9 @@ from sextante.core.QGisLayers import QGisLayers
 from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
 from sextante.parameters.ParameterSelection import ParameterSelection
+from sextante.outputs.OutputRaster import OutputRaster
 from sextante.core.SextanteLog import SextanteLog
+from sextante.parameters.ParameterBoolean import ParameterBoolean
 
 try:  # qgis 1.8 sextante 1.08
     from sextante.ftools import ftools_utils
@@ -33,6 +35,7 @@ class kernelDensity(AnimoveAlgorithm):
     FIELD = "FIELD"
     PERCENT = "PERCENT"
     RESOLUTION = "RESOLUTION"
+    ADD_RASTER_OUTPUTS = "ADD_RASTER_OUTPUTS"
     BW_METHOD = "BW_METHOD"
     BW_VALUE = "BW_VALUE"
 
@@ -61,6 +64,8 @@ class kernelDensity(AnimoveAlgorithm):
                             self.getParameterValue(kernelDensity.INPUT))
         resolution = self.getParameterValue(kernelDensity.RESOLUTION)
         bw_method = self.getParameterValue(kernelDensity.BW_METHOD)
+        addRasterOutputs = self.getParameterValue(
+                            kernelDensity.ADD_RASTER_OUTPUTS)
 
         # Adjust parameters if necessary
         if perc > 100:
@@ -120,7 +125,7 @@ class kernelDensity(AnimoveAlgorithm):
             positions = np.vstack([X.ravel(), Y.ravel()])
             values = np.vstack([xPoints, yPoints])
             kernel = stats.kde.gaussian_kde(values)
-            kernel.set_bandwidth(bandwidth)
+            #kernel.set_bandwidth(bandwidth)
             Z = np.reshape(kernel(positions).T, X.T.shape)
 
             SextanteLog.addToLog(SextanteLog.LOG_INFO, "Bandwidth value for '"
@@ -131,8 +136,13 @@ class kernelDensity(AnimoveAlgorithm):
             raster_name = (str(name) + '_' + str(perc) + '_' +
                         str(value.toString()) + '_' +
                         str(datetime.date.today()))
-            self.to_geotiff(currentPath + '/raster_output/' + raster_name,
-                        xmin, xmax, ymin, ymax, X, Y, Z, epsg)
+            fileName = currentPath + '/raster_output/' + raster_name
+            self.to_geotiff(fileName, xmin, xmax, ymin, ymax, X, Y, Z, epsg)
+
+            if addRasterOutputs:
+                rasterOutput = OutputRaster(fileName, "Raster output")
+                self.addOutput(rasterOutput)
+                rasterOutput.setValue(fileName)
 
             # Create contour lines (temporary .shp) from GeoTIFF
             if SextanteUtils.isWindows():
@@ -198,6 +208,8 @@ class kernelDensity(AnimoveAlgorithm):
         self.addParameter(ParameterNumber(kernelDensity.BW_VALUE,
                     "Bandwidth value (only used  if 'Custom value' bandwidth "
                     "method selected)", 0.0, None, 0.2))
+        self.addParameter(ParameterBoolean(kernelDensity.ADD_RASTER_OUTPUTS,
+                    "Add raster outputs to QGIS"))
         self.addOutput(OutputVector(kernelDensity.OUTPUT,
                     "Kernel Density Estimation"))
 
