@@ -152,6 +152,7 @@ class kernelDensity(AnimoveAlgorithm):
             # Representation of a kernel-density estimate using Gaussian
             # kernels.
             # Taken from http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html
+            # You need at least version 0.11 of scipy            
             ###################################################################
             #kernel = stats.kde.gaussian_kde(values)
             # #kernel.set_bandwidth(bandwidth)
@@ -167,6 +168,7 @@ class kernelDensity(AnimoveAlgorithm):
             # Compute kernel Z with statsmodels.nonparametric.kernel_density.KDEMultivariate
             # Representation of a kernel-density estimate
             # Taken from http://goo.gl/kwEfD
+            # You need at least version 0.5 of statsmodels           
             ###################################################################
             kernel = sm.nonparametric.KDEMultivariate(data=values,
                 var_type='uu', bw=bandwidth)
