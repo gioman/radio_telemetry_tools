@@ -7,7 +7,7 @@ def description():
 
 
 def version():
-    return "Version 1.2.6"
+    return "Version 1.3.3"
 
 
 def icon():
@@ -27,7 +27,7 @@ def email():
 
 
 def repository():
-    return "https://github.com/volterra79/sextante_animove"
+    return "https://github.com/geomatico/sextante_animove"
 
 
 def classFactory(iface):
