@@ -7,10 +7,14 @@ from sextante.parameters.ParameterVector import ParameterVector
 from sextante.core.QGisLayers import QGisLayers
 from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
-try:  # qgis 1.8 sextante 1.08
-    from sextante.ftools import ftools_utils
-except:
+
+try:  
+    # SEXTANTE 1.0.8
     from sextante.algs.ftools import ftools_utils
+except:
+    # SEXTANTE 1.0.7, 1.0.5
+    from sextante.ftools import ftools_utils
+
 from sextante.core.SextanteLog import SextanteLog
 from sextante.parameters.ParameterTableField import ParameterTableField
 from sextante.parameters.ParameterNumber import ParameterNumber
@@ -33,7 +37,10 @@ class mcp(AnimoveAlgorithm):
                         self.getParameterValue(mcp.INPUT))
 
         inputProvider = inputLayer.dataProvider()
-        inputProvider.select(inputProvider.attributeIndexes())
+        try:
+            inputProvider.select(inputProvider.attributeIndexes())
+        except:
+            pass
 
         fields = [QgsField("ID", QVariant.String),
                   QgsField("Area", QVariant.Double),

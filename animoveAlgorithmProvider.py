@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from PyQt4 import QtGui
 
@@ -13,17 +14,25 @@ class animoveAlgorithmProvider(AlgorithmProvider):
     def __init__(self):
         AlgorithmProvider.__init__(self)
         self.alglist = [mcp()]
+        
+        can_execute_kernel = True
         try:
             from scipy.stats.kde import gaussian_kde
-            self.alglist.append(kernelDensity())
         except:
             try:
                 from statsmodels.nonparametric import kernel_density
-                self.alglist.append(kernelDensity())
             except:
                 # No gaussian_kde (scipy) or kernel_density (statsmodels)
                 # We cannot execute the kernelDensity algorithm
-                pass
+                can_execute_kernel = False
+        try:
+            subprocess.call('gdal_contour')
+        except:
+            # Cannot execute gdal_contour
+            can_execute_kernel = False
+        
+        if can_execute_kernel:
+            self.alglist.append(kernelDensity())        
 
     def getDescription(self):
         return "AniMove (MCP and Kernel analysis UD)"

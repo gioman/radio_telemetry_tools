@@ -2,8 +2,9 @@
 [general]
 name=AniMove for SEXTANTE
 description=MCP and Kernel functions for UD
-version=1.2.6
+version=1.3.3
 qgisMinimumVersion=1.0
+qgisMaximumVersion=1.8
 email=francescoboccacci@libero.it
 ; not used yet
 category=Analysis

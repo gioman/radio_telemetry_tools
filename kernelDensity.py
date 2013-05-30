@@ -1,5 +1,7 @@
 import os
 import re
+import subprocess
+
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -13,11 +15,12 @@ from sextante.outputs.OutputRaster import OutputRaster
 from sextante.core.SextanteLog import SextanteLog
 from sextante.parameters.ParameterBoolean import ParameterBoolean
 
-
-try:  # qgis 1.8 sextante 1.08
-    from sextante.ftools import ftools_utils
-except:
+try:  
+    # SEXTANTE 1.0.8
     from sextante.algs.ftools import ftools_utils
+except:
+    # SEXTANTE 1.0.7, 1.0.5
+    from sextante.ftools import ftools_utils
 
 from sextante.parameters.ParameterTableField import ParameterTableField
 from sextante.parameters.ParameterNumber import ParameterNumber
@@ -81,7 +84,10 @@ class kernelDensity(AnimoveAlgorithm):
 
     def processAlgorithm(self, progress):
         currentPath = os.path.dirname(os.path.abspath(__file__))
-
+        outputs = os.path.join(currentPath, 'outputs')
+        if not os.path.exists(outputs):
+            os.mkdir(outputs)
+        
         # Get parameters
         perc = self.getParameterValue(kernelDensity.PERCENT)
         field = self.getParameterValue(kernelDensity.FIELD)
@@ -222,7 +228,8 @@ class kernelDensity(AnimoveAlgorithm):
             raster_name = (str(name) + '_' + str(perc) + '_' +
                         str(value.toString()) + '_' +
                         str(datetime.date.today()))
-            fileName = currentPath + '/raster_output/' + raster_name
+            
+            fileName = os.path.join(outputs, raster_name)
 
             SextanteLog.addToLog(SextanteLog.LOG_INFO, "Writing '"
                + fileName + "' to disc")
@@ -237,21 +244,21 @@ class kernelDensity(AnimoveAlgorithm):
                 rasterOutput.setValue(fileName)
 
             # Create contour lines (temporary .shp) from GeoTIFF
-            if SextanteUtils.isWindows():
-                cmd = "gdal_contour.exe "
-            else:
-                cmd = "gdal_contour "
+            basename = "animove_tmp_" + str(n)
+            shpFile = os.path.join(outputs, basename + ".shp")
 
-            basename = "c" + str(n)
-            shpFile = os.path.join(currentPath, basename + ".shp")
-
-            contour_cmd = (cmd + currentPath + "/raster_output/"
-                          + raster_name + " -a values -i 10 " + shpFile)
-
+            args = ['gdal_contour', fileName, '-a', 'values', '-i', '10', shpFile]
             SextanteLog.addToLog(SextanteLog.LOG_INFO,
-                    "Creating contour lines for GeoTIFF: " + contour_cmd)
+                    "Creating contour lines for GeoTIFF: " + str(args))
 
-            os.system(contour_cmd)
+            startupinfo = None
+            try:
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            except:
+                pass
+            process = subprocess.Popen(args, startupinfo=startupinfo)
+            process.wait()
 
             # Read contour lines from temporary .shp
             SextanteLog.addToLog(SextanteLog.LOG_INFO, "Reading contour lines "
@@ -289,18 +296,22 @@ class kernelDensity(AnimoveAlgorithm):
             self.setFeatureAttributes(feature, [value.toString(), area, perim])
             writer.addFeature(outFeat)
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Removing temporary "
-                    + "files and updating progress bar")
+            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Updating progress bar")
 
-            # Remove temporary files and update progress
-            for f in os.listdir(currentPath):
-                if re.search(basename + ".*", f):
-                    os.remove(os.path.join(currentPath, f))
             n += 1
             progress.setPercentage(progress_perc * n)
 
-        SextanteLog.addToLog(SextanteLog.LOG_INFO, "Finished. Deleting writer")
+        SextanteLog.addToLog(SextanteLog.LOG_INFO, "Finished. Removing "
+                             "temporary files and deleting writer")
         del writer
+        
+        for f in os.listdir(outputs):
+            if re.search("animove_tmp_*", f):
+                try:
+                    os.remove(os.path.join(outputs, f))
+                except OSError:
+                    SextanteLog.addToLog(SextanteLog.LOG_WARNING, 
+                            "Cannot remove " + f)
 
     def defineCharacteristics(self):
         self.name = "Kernel Density Estimation"
@@ -349,6 +360,6 @@ class kernelDensity(AnimoveAlgorithm):
             return False
 
         return (bw_method == kernelDensity.BW_METHOD_SCOTT or
-                bw_method == kernelDensity.BW_METHOD_SCOTT or
+                bw_method == kernelDensity.BW_METHOD_SILVERMAN or
                 (bw_method == kernelDensity.BW_METHOD_CUSTOM and
                     'set_bandwidth' in dir(gaussian_kde)))

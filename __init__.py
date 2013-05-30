@@ -18,6 +18,10 @@ def qgisMinimumVersion():
     return "1.0"
 
 
+def qgisMaximumVersion():
+    return "1.8"
+
+
 def author():
     return "Francesco Boccacci"
 
