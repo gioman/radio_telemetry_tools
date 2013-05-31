@@ -4,6 +4,7 @@ import subprocess
 from PyQt4 import QtGui
 
 from sextante.core.AlgorithmProvider import AlgorithmProvider
+from sextante.core.SextanteLog import SextanteLog
 
 from mcp import mcp
 from kernelDensity import kernelDensity
@@ -14,25 +15,35 @@ class animoveAlgorithmProvider(AlgorithmProvider):
     def __init__(self):
         AlgorithmProvider.__init__(self)
         self.alglist = [mcp()]
-        
-        can_execute_kernel = True
+
+        # Check scipy
         try:
             from scipy.stats.kde import gaussian_kde
+            has_scipy = True
         except:
-            try:
-                from statsmodels.nonparametric import kernel_density
-            except:
-                # No gaussian_kde (scipy) or kernel_density (statsmodels)
-                # We cannot execute the kernelDensity algorithm
-                can_execute_kernel = False
+            has_scipy = False
+        # Check statsmodels
+        try:
+            from statsmodels.nonparametric import kernel_density
+            has_statsmodels = True
+        except:
+            has_statsmodels = False
+        # Check gdal_contour
         try:
             subprocess.call('gdal_contour')
+            has_gdal_contour = True
         except:
-            # Cannot execute gdal_contour
-            can_execute_kernel = False
-        
-        if can_execute_kernel:
-            self.alglist.append(kernelDensity())        
+            has_gdal_contour = False
+
+        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                    "Scipy found: " + str(has_scipy))
+        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                    "Statsmodels found: " + str(has_statsmodels))
+        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                    "gdal_contour found: " + str(has_gdal_contour))
+
+        if has_gdal_contour and (has_scipy or has_statsmodels):
+            self.alglist.append(kernelDensity())
 
     def getDescription(self):
         return "AniMove (MCP and Kernel analysis UD)"

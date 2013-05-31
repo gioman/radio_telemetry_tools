@@ -15,7 +15,7 @@ from sextante.outputs.OutputRaster import OutputRaster
 from sextante.core.SextanteLog import SextanteLog
 from sextante.parameters.ParameterBoolean import ParameterBoolean
 
-try:  
+try:
     # SEXTANTE 1.0.8
     from sextante.algs.ftools import ftools_utils
 except:
@@ -27,7 +27,6 @@ from sextante.parameters.ParameterNumber import ParameterNumber
 import numpy as np
 from osgeo import gdal, osr
 import datetime
-from sextante.core.SextanteUtils import SextanteUtils
 
 try:
     from scipy.stats.kde import gaussian_kde
@@ -87,7 +86,7 @@ class kernelDensity(AnimoveAlgorithm):
         outputs = os.path.join(currentPath, 'outputs')
         if not os.path.exists(outputs):
             os.mkdir(outputs)
-        
+
         # Get parameters
         perc = self.getParameterValue(kernelDensity.PERCENT)
         field = self.getParameterValue(kernelDensity.FIELD)
@@ -228,7 +227,7 @@ class kernelDensity(AnimoveAlgorithm):
             raster_name = (str(name) + '_' + str(perc) + '_' +
                         str(value.toString()) + '_' +
                         str(datetime.date.today()))
-            
+
             fileName = os.path.join(outputs, raster_name)
 
             SextanteLog.addToLog(SextanteLog.LOG_INFO, "Writing '"
@@ -247,7 +246,8 @@ class kernelDensity(AnimoveAlgorithm):
             basename = "animove_tmp_" + str(n)
             shpFile = os.path.join(outputs, basename + ".shp")
 
-            args = ['gdal_contour', fileName, '-a', 'values', '-i', '10', shpFile]
+            args = ['gdal_contour', fileName, '-a', 'values',
+                    '-i', '10', shpFile]
             SextanteLog.addToLog(SextanteLog.LOG_INFO,
                     "Creating contour lines for GeoTIFF: " + str(args))
 
@@ -304,13 +304,13 @@ class kernelDensity(AnimoveAlgorithm):
         SextanteLog.addToLog(SextanteLog.LOG_INFO, "Finished. Removing "
                              "temporary files and deleting writer")
         del writer
-        
+
         for f in os.listdir(outputs):
             if re.search("animove_tmp_*", f):
                 try:
                     os.remove(os.path.join(outputs, f))
                 except OSError:
-                    SextanteLog.addToLog(SextanteLog.LOG_WARNING, 
+                    SextanteLog.addToLog(SextanteLog.LOG_WARNING,
                             "Cannot remove " + f)
 
     def defineCharacteristics(self):
