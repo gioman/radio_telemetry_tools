@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import sys
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
@@ -19,8 +20,12 @@ try:
     # SEXTANTE 1.0.8
     from sextante.algs.ftools import ftools_utils
 except:
-    # SEXTANTE 1.0.7, 1.0.5
-    from sextante.ftools import ftools_utils
+    try:
+        # SEXTANTE 1.0.7, 1.0.5
+        from sextante.ftools import ftools_utils
+    except:
+        # SEXTANTE 1.0.9
+        from sextante.algs.ftools import FToolsUtils as ftools_utils
 
 from sextante.parameters.ParameterTableField import ParameterTableField
 from sextante.parameters.ParameterNumber import ParameterNumber
@@ -127,7 +132,11 @@ class kernelDensity(AnimoveAlgorithm):
             pass
 
         fieldIndex = inputProvider.fieldNameIndex(field)
-        uniqueValues = ftools_utils.getUniqueValues(inputProvider, fieldIndex)
+
+        try:
+            uniqueValues = ftools_utils.getUniqueValues(inputProvider, fieldIndex)
+        except:
+            uniqueValues = ftools_utils.getUniqueValues(inputLayer, fieldIndex)
 
         fields = [QgsField("ID", QVariant.String),
                   QgsField("Area", QVariant.Double),

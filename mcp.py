@@ -1,4 +1,6 @@
 import os.path
+import sys
+
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -8,12 +10,16 @@ from sextante.core.QGisLayers import QGisLayers
 from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
 
-try:  
+try:
     # SEXTANTE 1.0.8
     from sextante.algs.ftools import ftools_utils
 except:
-    # SEXTANTE 1.0.7, 1.0.5
-    from sextante.ftools import ftools_utils
+    try:
+        # SEXTANTE 1.0.7, 1.0.5
+        from sextante.ftools import ftools_utils
+    except:
+        # SEXTANTE 1.0.9
+        from sextante.algs.ftools import FToolsUtils as ftools_utils
 
 from sextante.core.SextanteLog import SextanteLog
 from sextante.parameters.ParameterTableField import ParameterTableField
@@ -50,7 +56,11 @@ class mcp(AnimoveAlgorithm):
                         QGis.WKBPolygon, inputProvider.crs())
 
         index = inputProvider.fieldNameIndex(field)
-        uniqueValues = ftools_utils.getUniqueValues(inputProvider, index)
+        
+        try:
+            uniqueValues = ftools_utils.getUniqueValues(inputProvider, index)
+        except:
+            uniqueValues = ftools_utils.getUniqueValues(inputLayer, index)
 
         GEOS_EXCEPT = True
         FEATURE_EXCEPT = True
