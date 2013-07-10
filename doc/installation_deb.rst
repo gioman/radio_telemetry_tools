@@ -4,8 +4,10 @@ We assume that you have installed QGIS (<= 1.9) from the official deb repo (via 
 Download the plugin
 -------------------
 
-First, you have to download the plugin itself from `http://plugins.qgis.org/plugins/sextante_animove <http://plugins.qgis.org/plugins/sextante_animove>`_.
+First, you have to download the plugin:
 
+  http://plugins.qgis.org/plugins/sextante_animove
+  
 Unpack the downloaded zip file and place the *sextante_animove* folder into *<user_home>/.qgis/python/plugins*. Now
 the plugin is installed.
 
@@ -61,5 +63,5 @@ In order to check the installation, you can execute *python* from a Terminal::
   (check version >= 0.5)
   
 Then, you can execute QGIS, open the *SEXTANTE Toolbox* and use the AniMove algorithms. If they don't appear, open
-the *SEXTANTE options and configuration* and *Activate* the AniMove algorithms.
+the *SEXTANTE options and configuration* and *Activate* AniMove.
 
