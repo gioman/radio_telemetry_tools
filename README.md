@@ -1,18 +1,42 @@
 AniMove algorithms for SEXTANTE
-------------------------------
+-------------------------------
 
-SEXTANTE is a geoprocessing environment that can be used to call native and third party algorithms from QGIS, making your spatial analysis tasks more productive and easy to accomplish.
+SEXTANTE is a geoprocessing environment that can be used to call native and third party algorithms from QGIS, 
+making your spatial analysis tasks more productive and easy to accomplish.
 
-The plugin implements, as Sextante submodule, kernel analyses with the following algs:
+AniMove plugin implements, as Sextante submodule, kernel analyses with the following
+algs:
 
-* "href", the “reference” bandwidth is used in the estimation
-* "LSCV" (The Least Square Cross Validation) the “LSCV” bandwidth is used in the estimation
-* kernel with adjusted h
+* **href**: the *reference* bandwidth is used in the estimation.
+* **LSCV (The Least Square Cross Validation)**: the *LSCV* bandwidth is used in the estimation.
+* **Scott's Rule of Thumb**: the Scott's rule of thumb is used for bandwidth estimation.
+* **Silverman's Rule of Thumb**: the Silverman's rule of thumb is used for bandwidth estimation.
+* kernel with adjusted *h*
 
-Utilization distribution and contour lines will be produced, and area of the contour polygons will be calculated.
+Utilization distribution and contour lines are produced, and area of the contour
+polygons are calculated.
 
-Additionally, restricted Minimum Convex Polygons (MCP) will be implemented, as:
+Additionally, restricted Minimum Convex Polygons (MCP) are implemented, as:
 
-* MCP calculation of the smallest convex polygon enclosing all the relocations of the animal, excluding an user-selected percentage of locations furthest from a centre.  provider for SEXTANTE and allows to run
+* MCP calculation of the smallest convex polygon enclosing all the relocations of the
+animal, excluding an user-selected percentage of locations furthest from a centre.
 
---------------------------------------
+
+
+Support
+-------
+
+Part of the [AniMove project](http://www.faunalia.it/animove) supported by Faunalia.
+
+The plugin was developed by:
+
+* Jorge Arévalo ([geomati.co](http://geomati.co))
+* Francesco Boccacci 
+* Víctor González ([geomati.co](http://geomati.co))
+
+and financially supported by:
+
+* Marco Zaccaroni - Department of Biology, University of Firenze
+* António Mira
+* Dimitris Poursanidis
+* Giovanni Manghi
