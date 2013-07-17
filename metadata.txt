@@ -1,7 +1,7 @@
 ; the next section is mandatory
 [general]
 name=AniMove for SEXTANTE
-description=MCP and Kernel functions for UD
+description=MCP and Kernel functions for UD -- Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), António Mira, Dimitris Poursanidis and Giovanni Manghi.
 version=1.3.3
 qgisMinimumVersion=1.0
 qgisMaximumVersion=1.8
