@@ -289,7 +289,7 @@ class kernelDensity(AnimoveAlgorithm):
                                  "Writing polylines features")
             outFeat = QgsFeature()
             outFeat.setGeometry(QgsGeometry.fromMultiPolyline(outGeom))
-            self.setFeatureAttributes(feature, [value, area, perim])
+            self.setFeatureAttributes(outFeat, [value, area, perim])
             writer.addFeature(outFeat)
 
             ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
