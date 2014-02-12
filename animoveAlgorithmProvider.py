@@ -3,8 +3,8 @@ import subprocess
 
 from PyQt4 import QtGui
 
-from sextante.core.AlgorithmProvider import AlgorithmProvider
-from sextante.core.SextanteLog import SextanteLog
+from processing.core.AlgorithmProvider import AlgorithmProvider
+from processing.core.ProcessingLog import ProcessingLog
 
 from mcp import mcp
 from kernelDensity import kernelDensity
@@ -35,11 +35,11 @@ class animoveAlgorithmProvider(AlgorithmProvider):
         except:
             has_gdal_contour = False
 
-        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+        ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Scipy found: " + str(has_scipy))
-        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+        ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Statsmodels found: " + str(has_statsmodels))
-        SextanteLog.addToLog(SextanteLog.LOG_INFO,
+        ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "gdal_contour found: " + str(has_gdal_contour))
 
         if has_gdal_contour and (has_scipy or has_statsmodels):

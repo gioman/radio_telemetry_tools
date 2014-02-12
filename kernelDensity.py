@@ -1,34 +1,23 @@
 import os
 import re
 import subprocess
-import sys
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-from sextante.parameters.ParameterVector import ParameterVector
-from sextante.core.QGisLayers import QGisLayers
-from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
-from sextante.parameters.ParameterSelection import ParameterSelection
-from sextante.outputs.OutputRaster import OutputRaster
-from sextante.core.SextanteLog import SextanteLog
-from sextante.parameters.ParameterBoolean import ParameterBoolean
+from processing.algs.ftools import FToolsUtils
+from processing.core.QGisLayers import QGisLayers
+from processing.core.ProcessingLog import ProcessingLog
+from processing.parameters.ParameterBoolean import ParameterBoolean
+from processing.parameters.ParameterNumber import ParameterNumber
+from processing.parameters.ParameterVector import ParameterVector
+from processing.parameters.ParameterSelection import ParameterSelection
+from processing.parameters.ParameterTableField import ParameterTableField
+from processing.outputs.OutputVector import OutputVector
+from processing.outputs.OutputRaster import OutputRaster
 
-try:
-    # SEXTANTE 1.0.8
-    from sextante.algs.ftools import ftools_utils
-except:
-    try:
-        # SEXTANTE 1.0.7, 1.0.5
-        from sextante.ftools import ftools_utils
-    except:
-        # SEXTANTE 1.0.9
-        from sextante.algs.ftools import FToolsUtils as ftools_utils
-
-from sextante.parameters.ParameterTableField import ParameterTableField
-from sextante.parameters.ParameterNumber import ParameterNumber
 import numpy as np
 from osgeo import gdal, osr
 import datetime
@@ -134,9 +123,10 @@ class kernelDensity(AnimoveAlgorithm):
         fieldIndex = inputProvider.fieldNameIndex(field)
 
         try:
-            uniqueValues = ftools_utils.getUniqueValues(inputProvider, fieldIndex)
+            uniqueValues = FToolsUtils.getUniqueValues(inputProvider,
+                                                       fieldIndex)
         except:
-            uniqueValues = ftools_utils.getUniqueValues(inputLayer, fieldIndex)
+            uniqueValues = FToolsUtils.getUniqueValues(inputLayer, fieldIndex)
 
         fields = [QgsField("ID", QVariant.String),
                   QgsField("Area", QVariant.Double),
@@ -153,9 +143,8 @@ class kernelDensity(AnimoveAlgorithm):
             yPoints = []
             for feature in QGisLayers.features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[fieldIndex]
-                if (fieldValue.toString().trimmed() ==
-                            value.toString().trimmed()):
-                    points = ftools_utils.extractPoints(feature.geometry())
+                if (fieldValue.strip() == value.strip()):
+                    points = FToolsUtils.extractPoints(feature.geometry())
                     xPoints.append(points[0].x())
                     yPoints.append(points[0].y())
 
@@ -172,10 +161,10 @@ class kernelDensity(AnimoveAlgorithm):
             X, Y = np.mgrid[xmin:xmax:complex(resolution),
                             ymin:ymax:complex(resolution)]
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "X shape : "
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "X shape : "
                + str(X.shape))
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Y shape : "
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "Y shape : "
                + str(Y.shape))
 
             # Meshgrid in form of stacked array with all possible positions
@@ -184,10 +173,10 @@ class kernelDensity(AnimoveAlgorithm):
             # Meshgrid with all the real positions
             values = np.vstack([xPoints, yPoints])
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Positions shape : "
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "Positions shape : "
                + str(positions.shape))
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Values shape : "
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "Values shape : "
                + str(values.shape))
 
             if self.use_scipy(bw_method):
@@ -208,9 +197,9 @@ class kernelDensity(AnimoveAlgorithm):
                     elif bandwidth == 'silverman':
                         kernel.covariance_factor = kernel.silverman_factor
                 Z = np.reshape(kernel(positions).T, X.T.shape)
-                SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Bandwidth value for '"
-                    + str(value.toString().trimmed()) + "': "
+                    + str(value.strip()) + "': "
                     + str(kernel.covariance_factor()))
             else:
                 ##############################################################
@@ -224,28 +213,27 @@ class kernelDensity(AnimoveAlgorithm):
                                 var_type='cc', bw=bandwidth)
                 # Evaluate positions using kernel
                 Z = np.reshape(kernel.pdf(positions).T, X.T.shape)
-                SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Bandwidth value for: "
-                    + str(value.toString().trimmed())
-                    + "': " + str(kernel.bw))
+                    + str(value.strip()) + "': " + str(kernel.bw))
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO,
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                 "Shape of evaluation transponse : " + str(Z.T.shape))
 
             # Write kernel to GeoTIFF
             raster_name = (str(name) + '_' + str(perc) + '_' +
-                        str(value.toString()) + '_' +
+                        str(value) + '_' +
                         str(datetime.date.today()))
 
             fileName = os.path.join(outputs, raster_name)
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Writing '"
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "Writing '"
                + fileName + "' to disc")
 
             self.to_geotiff(fileName, xmin, xmax, ymin, ymax, X, Y, Z, epsg)
 
             if addRasterOutputs:
-                SextanteLog.addToLog(SextanteLog.LOG_INFO,
+                ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                         "Adding raster output as layer")
                 rasterOutput = OutputRaster(fileName, "Raster output")
                 self.addOutput(rasterOutput)
@@ -257,7 +245,7 @@ class kernelDensity(AnimoveAlgorithm):
 
             args = ['gdal_contour', fileName, '-a', 'values',
                     '-i', '10', shpFile]
-            SextanteLog.addToLog(SextanteLog.LOG_INFO,
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Creating contour lines for GeoTIFF: " + str(args))
 
             startupinfo = None
@@ -270,9 +258,8 @@ class kernelDensity(AnimoveAlgorithm):
             process.wait()
 
             # Read contour lines from temporary .shp
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Reading contour lines "
-                    + " from temporary SHP: "
-                    + shpFile)
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
+                    "Reading contour lines from temporary SHP: " + shpFile)
 
             layer = QgsVectorLayer(shpFile, basename, "ogr")
             provider = layer.dataProvider()
@@ -283,8 +270,8 @@ class kernelDensity(AnimoveAlgorithm):
 
             # Create an array containing all polylines in the temporary
             # .shp and compute the sum of all areas and perimeters
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Creating polylines "
-                    + " from all SHP")
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
+                                   "Creating polylines from all SHP")
             outGeom = []
             area = 0
             perim = 0
@@ -298,19 +285,20 @@ class kernelDensity(AnimoveAlgorithm):
                 outGeom.append(polyline)
 
             # Create feature and write
-            SextanteLog.addToLog(SextanteLog.LOG_INFO,
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                                  "Writing polylines features")
             outFeat = QgsFeature()
             outFeat.setGeometry(QgsGeometry.fromMultiPolyline(outGeom))
-            self.setFeatureAttributes(feature, [value.toString(), area, perim])
+            self.setFeatureAttributes(feature, [value, area, perim])
             writer.addFeature(outFeat)
 
-            SextanteLog.addToLog(SextanteLog.LOG_INFO, "Updating progress bar")
+            ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
+                                   "Updating progress bar")
 
             n += 1
             progress.setPercentage(progress_perc * n)
 
-        SextanteLog.addToLog(SextanteLog.LOG_INFO, "Finished. Removing "
+        ProcessingLog.addToLog(ProcessingLog.LOG_INFO, "Finished. Removing "
                              "temporary files and deleting writer")
         del writer
 
@@ -319,7 +307,7 @@ class kernelDensity(AnimoveAlgorithm):
                 try:
                     os.remove(os.path.join(outputs, f))
                 except OSError:
-                    SextanteLog.addToLog(SextanteLog.LOG_WARNING,
+                    ProcessingLog.addToLog(ProcessingLog.LOG_WARNING,
                             "Cannot remove " + f)
 
     def defineCharacteristics(self):

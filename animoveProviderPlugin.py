@@ -2,7 +2,7 @@ from qgis.core import *
 import os
 import sys
 import inspect
-from sextante.core.Sextante import Sextante
+from processing.core.Processing import Processing
 from animoveAlgorithmProvider import animoveAlgorithmProvider
 
 
@@ -16,7 +16,7 @@ class animoveProviderPlugin:
         self.provider = animoveAlgorithmProvider()
 
     def initGui(self):
-        Sextante.addProvider(self.provider)
+        Processing.addProvider(self.provider)
 
     def unload(self):
-        Sextante.removeProvider(self.provider)
+        Processing.removeProvider(self.provider)

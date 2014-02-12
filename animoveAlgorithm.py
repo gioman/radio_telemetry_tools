@@ -1,5 +1,4 @@
-from sextante.core.GeoAlgorithm import GeoAlgorithm
-from PyQt4.QtCore import QVariant
+from processing.core.GeoAlgorithm import GeoAlgorithm
 
 
 class AnimoveAlgorithm(GeoAlgorithm):
@@ -14,12 +13,12 @@ class AnimoveAlgorithm(GeoAlgorithm):
         try:
             atts = []
             for attribute in attributes:
-                atts.append(QVariant(attribute))
+                atts.append(attribute)
             feature.setAttributes(atts)
         except:
             i = 0
             for attribute in attributes:
-                feature.addAttribute(i, QVariant(attribute))
+                feature.addAttribute(i, attribute)
                 i = i + 1
 
     def getWriter(self, name, fields, geomType, crs):

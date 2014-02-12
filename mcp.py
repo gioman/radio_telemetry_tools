@@ -1,29 +1,17 @@
 import os.path
-import sys
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-from sextante.parameters.ParameterVector import ParameterVector
-from sextante.core.QGisLayers import QGisLayers
-from sextante.outputs.OutputVector import OutputVector
 from animoveAlgorithm import AnimoveAlgorithm
-
-try:
-    # SEXTANTE 1.0.8
-    from sextante.algs.ftools import ftools_utils
-except:
-    try:
-        # SEXTANTE 1.0.7, 1.0.5
-        from sextante.ftools import ftools_utils
-    except:
-        # SEXTANTE 1.0.9
-        from sextante.algs.ftools import FToolsUtils as ftools_utils
-
-from sextante.core.SextanteLog import SextanteLog
-from sextante.parameters.ParameterTableField import ParameterTableField
-from sextante.parameters.ParameterNumber import ParameterNumber
+from processing.parameters.ParameterVector import ParameterVector
+from processing.algs.ftools import FToolsUtils
+from processing.core.QGisLayers import QGisLayers
+from processing.core.ProcessingLog import ProcessingLog
+from processing.parameters.ParameterTableField import ParameterTableField
+from processing.parameters.ParameterNumber import ParameterNumber
+from processing.outputs.OutputVector import OutputVector
 
 
 class mcp(AnimoveAlgorithm):
@@ -56,11 +44,11 @@ class mcp(AnimoveAlgorithm):
                         QGis.WKBPolygon, inputProvider.crs())
 
         index = inputProvider.fieldNameIndex(field)
-        
+
         try:
-            uniqueValues = ftools_utils.getUniqueValues(inputProvider, index)
+            uniqueValues = FToolsUtils.getUniqueValues(inputProvider, index)
         except:
-            uniqueValues = ftools_utils.getUniqueValues(inputLayer, index)
+            uniqueValues = FToolsUtils.getUniqueValues(inputLayer, index)
 
         GEOS_EXCEPT = True
         FEATURE_EXCEPT = True
@@ -80,9 +68,8 @@ class mcp(AnimoveAlgorithm):
 
             for feature in QGisLayers.features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[index]
-                if (fieldValue.toString().trimmed() ==
-                        value.toString().trimmed()):
-                    points = ftools_utils.extractPoints(feature.geometry())
+                if (fieldValue.strip() == value.strip()):
+                    points = FToolsUtils.extractPoints(feature.geometry())
                     cx += points[0].x()
                     cy += points[0].y()
                     nf += 1
@@ -95,34 +82,33 @@ class mcp(AnimoveAlgorithm):
             features = QGisLayers.features(inputLayer)
             for feature in features:
                 fieldValue = self.getFeatureAttributes(feature)[index]
-                if (fieldValue.toString().trimmed() ==
-                        value.toString().trimmed()):
+                if (fieldValue.strip() == value.strip()):
                     nElement += 1
                     geometry = QgsGeometry(feature.geometry())
                     distance = distArea.measureLine(meanPoint,
                                                     geometry.asPoint())
                     distanceGeometryMap[distance] = geometry
                     if perc == 100:
-                        points = ftools_utils.extractPoints(geometry)
+                        points = FToolsUtils.extractPoints(geometry)
                         hull.extend(points)
 
             if perc != 100:
                 if perc > 100:
                     perc = 100
-                    SextanteLog.addToLog(SextanteLog.LOG_WARNING,
+                    ProcessingLog.addToLog(ProcessingLog.LOG_WARNING,
                         "Please insert a valid percentage (0-100%)")
 
                 hull = self.percpoints(perc, distanceGeometryMap, nElement)
 
             if len(hull) >= 3:
                 try:
+                    outGeom = QgsGeometry.fromMultiPoint(hull).convexHull()
                     outFeat = QgsFeature()
-                    outFeat.setGeometry(QgsGeometry.fromMultiPoint(hull).
-                                        convexHull())
+                    outFeat.setGeometry(outGeom)
                     measure = QgsDistanceArea()
-                    self.setFeatureAttributes(outFeat, [value.toString(),
-                                        measure.measure(geometry),
-                                        measure.measurePerimeter(geometry)])
+                    self.setFeatureAttributes(outFeat, [value,
+                                        measure.measure(outGeom),
+                                        measure.measurePerimeter(outGeom)])
                     writer.addFeature(outFeat)
                 except:
                     GEOS_EXCEPT = False
@@ -133,10 +119,10 @@ class mcp(AnimoveAlgorithm):
         del writer
 
         if not GEOS_EXCEPT:
-            SextanteLog.addToLog(SextanteLog.LOG_WARNING,
+            ProcessingLog.addToLog(ProcessingLog.LOG_WARNING,
                 "Geometry exception while computing convex hull")
         if not FEATURE_EXCEPT:
-            SextanteLog.addToLog(SextanteLog.LOG_WARNING,
+            ProcessingLog.addToLog(ProcessingLog.LOG_WARNING,
                 "Feature exception while computing convex hull")
 
     def defineCharacteristics(self):
@@ -155,7 +141,7 @@ class mcp(AnimoveAlgorithm):
         n = 1
         for k in sorted(list_distances.keys()):
             if n < l:
-                points = ftools_utils.extractPoints(list_distances[k])
+                points = FToolsUtils.extractPoints(list_distances[k])
                 hull.extend(points)
                 n += 1
             else:
