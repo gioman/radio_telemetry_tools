@@ -38,14 +38,14 @@ Then, upgrade the *numpy* and *scipy* Python packages::
 
   $ sudo pip install --upgrade numpy scipy
   
-Finally, install/upgrade *pandas* (required by *statsmodels*) and *statsmodels*::
+Finally, install `statsmodels <http://statsmodels.sourceforge.net/devel/install.html>`_. Probably the
+easiest way to install it is from source code. First, install the *patsy* dependency::
 
-  $ sudo pip install -- upgrade pandas
-  $ sudo pip install -- upgrade statsmodels
+  $ sudo pip install --upgrade patsy
 
-**NOTE**: At the time of writing, the *statsmodels* required version (0.5) was still not released. If after upgrading
-*statsmodels*, the package version is still lower than 0.5, all you can do is wait for them to make the final release.
+And then unpack the *.tar.gz* package and install::
 
+  $ sudo python setup.py install
 
 Check the installation
 ----------------------
