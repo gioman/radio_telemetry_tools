@@ -1,5 +1,5 @@
 def name():
-    return "AniMove for SEXTANTE"
+    return "AniMove for QGIS"
 
 
 def description():

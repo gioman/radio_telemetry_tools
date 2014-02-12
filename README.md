@@ -1,10 +1,10 @@
-AniMove algorithms for SEXTANTE
--------------------------------
+AniMove algorithms for QGIS
+---------------------------
 
-SEXTANTE is a geoprocessing environment that can be used to call native and third party algorithms from QGIS, 
+QGIS provides a processing environment that can be used to call native and third party algorithms,
 making your spatial analysis tasks more productive and easy to accomplish.
 
-AniMove plugin implements, as Sextante submodule, kernel analyses with the following
+AniMove plugin implements, as a processing submodule, kernel analyses with the following
 algs:
 
 * **href**: the *reference* bandwidth is used in the estimation.

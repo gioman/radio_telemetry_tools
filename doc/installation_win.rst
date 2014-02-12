@@ -1,4 +1,4 @@
-This tutorial explains how to install the AniMove for SEXTANTE plugin in a Windows system.
+This tutorial explains how to install the AniMove for QGIS plugin in a Windows system.
 
 Install Quantum GIS
 -------------------
@@ -9,9 +9,6 @@ First you have to install Quantum GIS. We recommend to install it using the OSGe
   
 The AniMove plugin depends on *scipy* (>=0.11) and the standalone installer does not provide it.
 If you install Quantum GIS using the standalone installer, some options will not be available.
-
-Then, install SEXTANTE using the *Plugins -> Fetch Python plugins* menu.
-
 
 Download the plugin
 -------------------
@@ -60,5 +57,5 @@ In order to check the installation, you can open the Python console from Quantum
   > statsmodels.version.version
   (check version >= 0.5)
 
-Then, open the *SEXTANTE Toolbox* and use the AniMove algorithms. If they don't appear, open the 
-*SEXTANTE options and configuration} and Activate AniMove.
+Then, open the *Processing Toolbox* and use the AniMove algorithms. If they don't appear, open the 
+*Processing options and configuration} and Activate AniMove.

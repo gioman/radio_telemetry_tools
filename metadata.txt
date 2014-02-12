@@ -1,6 +1,6 @@
 ; the next section is mandatory
 [general]
-name=AniMove for SEXTANTE
+name=AniMove for QGIS
 description=MCP and Kernel functions for UD -- Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), António Mira, Dimitris Poursanidis and Giovanni Manghi.
 version=1.3.4
 qgisMinimumVersion=2.0
@@ -21,7 +21,7 @@ tags=analysis, kernel
 
 homepage=http://www.faunalia.it/animove
 tracker=http://hub.qgis.org/projects/animoveforsextante
-repository=repository=https://github.com/volterra79/sextante_animove
+repository=repository=https://github.com/geomatico/sextante_animove
 
 ; path to a icon within the plugin folder
 icon=icons/animalmove.png
