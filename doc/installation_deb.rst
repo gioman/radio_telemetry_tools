@@ -1,5 +1,5 @@
 This tutorial explains how to install the AniMove for QGIS plugin in a deb-based system (Ubuntu, Linux Mint,...).
-We assume that you have installed QGIS (<= 1.9) from the official deb repo (via Package Manager or apt-get).
+We assume that you have installed QGIS (<= 2.0) from the official deb repo (via Package Manager or apt-get).
 
 Download the plugin
 -------------------
