@@ -40,3 +40,6 @@ and financially supported by:
 * António Mira
 * Dimitris Poursanidis
 * Giovanni Manghi
+* Stefano Anile
+* Christos Astaras - Department of Zoology, University of Oxford
+* Julia Hazel
