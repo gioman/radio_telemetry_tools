@@ -41,5 +41,5 @@ and financially supported by:
 * Dimitris Poursanidis
 * Giovanni Manghi
 * Stefano Anile
-* Christos Astaras - Department of Zoology, University of Oxford
+* Wildlife Conservation Research Unit (WildCRU), University of Oxford
 * Julia Hazel

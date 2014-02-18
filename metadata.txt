@@ -1,7 +1,7 @@
 ; the next section is mandatory
 [general]
 name=AniMove for QGIS
-description=MCP and Kernel functions for UD -- Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), António Mira, Dimitris Poursanidis and Giovanni Manghi.
+description=MCP and Kernel functions for UD -- Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), António Mira, Dimitris Poursanidis, Giovanni Manghi, Stefano Anile, WildCRU (University of Oxford) and Julia Hazel.
 version=1.3.4
 qgisMinimumVersion=2.0
 qgisMaximumVersion=2.99
