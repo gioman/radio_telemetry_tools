@@ -142,7 +142,7 @@ class mcp(AnimoveAlgorithm):
         self.addParameter(ParameterTableField(mcp.FIELD, "Field", mcp.INPUT))
         self.addParameter(ParameterNumber(mcp.PERCENT, "Percent of fixes",
                             5, 100, 95))
-        self.addOutput(OutputVector(mcp.OUTPUT, "Minimun Convex Polygon"))
+        self.addOutput(OutputVector(mcp.OUTPUT, "Minimum Convex Polygon"))
 
     def percpoints(self, percent, list_distances, l):
         l = (l * percent) / 100
