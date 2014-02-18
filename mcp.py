@@ -6,8 +6,19 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from animoveAlgorithm import AnimoveAlgorithm
 from processing.parameters.ParameterVector import ParameterVector
-from processing.algs.ftools import FToolsUtils
-from processing.core.QGisLayers import QGisLayers
+try:
+    # QGIS 2.2
+    from processing.tools.vector import features, getUniqueValues, extractPoints
+    from processing.tools.dataobjects import getObjectFromUri
+except:
+    # QGIS 2.0
+    from processing.algs.ftools import FToolsUtils
+    from processing.core.QGisLayers import QGisLayers
+    features = QGisLayers.features
+    getObjectFromUri = QGisLayers.getObjectFromUri
+    getUniqueValues = FToolsUtils.getUniqueValues
+    extractPoints = FToolsUtils.extractPoints
+
 from processing.core.ProcessingLog import ProcessingLog
 from processing.parameters.ParameterTableField import ParameterTableField
 from processing.parameters.ParameterNumber import ParameterNumber
@@ -27,8 +38,7 @@ class mcp(AnimoveAlgorithm):
     def processAlgorithm(self, progress):
         perc = self.getParameterValue(mcp.PERCENT)
         field = self.getParameterValue(mcp.FIELD)
-        inputLayer = QGisLayers.getObjectFromUri(
-                        self.getParameterValue(mcp.INPUT))
+        inputLayer = getObjectFromUri(self.getParameterValue(mcp.INPUT))
 
         inputProvider = inputLayer.dataProvider()
         try:
@@ -46,9 +56,9 @@ class mcp(AnimoveAlgorithm):
         index = inputProvider.fieldNameIndex(field)
 
         try:
-            uniqueValues = FToolsUtils.getUniqueValues(inputProvider, index)
+            uniqueValues = getUniqueValues(inputProvider, index)
         except:
-            uniqueValues = FToolsUtils.getUniqueValues(inputLayer, index)
+            uniqueValues = getUniqueValues(inputLayer, index)
 
         GEOS_EXCEPT = True
         FEATURE_EXCEPT = True
@@ -66,10 +76,10 @@ class mcp(AnimoveAlgorithm):
             except:
                 pass
 
-            for feature in QGisLayers.features(inputLayer):
+            for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[index]
                 if (fieldValue.strip() == value.strip()):
-                    points = FToolsUtils.extractPoints(feature.geometry())
+                    points = extractPoints(feature.geometry())
                     cx += points[0].x()
                     cy += points[0].y()
                     nf += 1
@@ -79,8 +89,7 @@ class mcp(AnimoveAlgorithm):
             meanPoint = QgsPoint(cx, cy)
             distArea = QgsDistanceArea()
             distanceGeometryMap = {}
-            features = QGisLayers.features(inputLayer)
-            for feature in features:
+            for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[index]
                 if (fieldValue.strip() == value.strip()):
                     nElement += 1
@@ -89,7 +98,7 @@ class mcp(AnimoveAlgorithm):
                                                     geometry.asPoint())
                     distanceGeometryMap[distance] = geometry
                     if perc == 100:
-                        points = FToolsUtils.extractPoints(geometry)
+                        points = extractPoints(geometry)
                         hull.extend(points)
 
             if perc != 100:
@@ -141,7 +150,7 @@ class mcp(AnimoveAlgorithm):
         n = 1
         for k in sorted(list_distances.keys()):
             if n < l:
-                points = FToolsUtils.extractPoints(list_distances[k])
+                points = extractPoints(list_distances[k])
                 hull.extend(points)
                 n += 1
             else:

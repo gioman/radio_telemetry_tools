@@ -7,8 +7,19 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from animoveAlgorithm import AnimoveAlgorithm
-from processing.algs.ftools import FToolsUtils
-from processing.core.QGisLayers import QGisLayers
+try:
+    # QGIS 2.2
+    from processing.tools.vector import features, getUniqueValues, extractPoints
+    from processing.tools.dataobjects import getObjectFromUri
+except:
+    # QGIS 2.0
+    from processing.algs.ftools import FToolsUtils
+    from processing.core.QGisLayers import QGisLayers
+    features = QGisLayers.features
+    getObjectFromUri = QGisLayers.getObjectFromUri
+    getUniqueValues = FToolsUtils.getUniqueValues
+    extractPoints = FToolsUtils.extractPoints
+
 from processing.core.ProcessingLog import ProcessingLog
 from processing.parameters.ParameterBoolean import ParameterBoolean
 from processing.parameters.ParameterNumber import ParameterNumber
@@ -84,7 +95,7 @@ class kernelDensity(AnimoveAlgorithm):
         # Get parameters
         perc = self.getParameterValue(kernelDensity.PERCENT)
         field = self.getParameterValue(kernelDensity.FIELD)
-        inputLayer = QGisLayers.getObjectFromUri(
+        inputLayer = getObjectFromUri(
                             self.getParameterValue(kernelDensity.INPUT))
         resolution = self.getParameterValue(kernelDensity.RESOLUTION)
         bw_method = kernelDensity.BW_METHODS.keys()[
@@ -123,10 +134,9 @@ class kernelDensity(AnimoveAlgorithm):
         fieldIndex = inputProvider.fieldNameIndex(field)
 
         try:
-            uniqueValues = FToolsUtils.getUniqueValues(inputProvider,
-                                                       fieldIndex)
+            uniqueValues = getUniqueValues(inputProvider, fieldIndex)
         except:
-            uniqueValues = FToolsUtils.getUniqueValues(inputLayer, fieldIndex)
+            uniqueValues = getUniqueValues(inputLayer, fieldIndex)
 
         fields = [QgsField("ID", QVariant.String),
                   QgsField("Area", QVariant.Double),
@@ -141,10 +151,10 @@ class kernelDensity(AnimoveAlgorithm):
             # Filter x,y points with desired field value (value)
             xPoints = []
             yPoints = []
-            for feature in QGisLayers.features(inputLayer):
+            for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[fieldIndex]
                 if (fieldValue.strip() == value.strip()):
-                    points = FToolsUtils.extractPoints(feature.geometry())
+                    points = extractPoints(feature.geometry())
                     xPoints.append(points[0].x())
                     yPoints.append(points[0].y())
 
@@ -276,8 +286,7 @@ class kernelDensity(AnimoveAlgorithm):
             area = 0
             perim = 0
             measure = QgsDistanceArea()
-            features = QGisLayers.features(layer)
-            for feat in features:
+            for feat in features(layer):
                 polyline = feat.geometry().asPolyline()
                 polygon = QgsGeometry.fromPolygon([polyline])
                 perim += measure.measurePerimeter(polygon)
