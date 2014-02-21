@@ -153,7 +153,7 @@ class kernelDensity(AnimoveAlgorithm):
             yPoints = []
             for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[fieldIndex]
-                if (fieldValue.strip() == value.strip()):
+                if (fieldValue == value):
                     points = extractPoints(feature.geometry())
                     xPoints.append(points[0].x())
                     yPoints.append(points[0].y())
@@ -209,7 +209,7 @@ class kernelDensity(AnimoveAlgorithm):
                 Z = np.reshape(kernel(positions).T, X.T.shape)
                 ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Bandwidth value for '"
-                    + str(value.strip()) + "': "
+                    + str(value) + "': "
                     + str(kernel.covariance_factor()))
             else:
                 ##############################################################
@@ -225,7 +225,7 @@ class kernelDensity(AnimoveAlgorithm):
                 Z = np.reshape(kernel.pdf(positions).T, X.T.shape)
                 ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                     "Bandwidth value for: "
-                    + str(value.strip()) + "': " + str(kernel.bw))
+                    + str(value) + "': " + str(kernel.bw))
 
             ProcessingLog.addToLog(ProcessingLog.LOG_INFO,
                 "Shape of evaluation transponse : " + str(Z.T.shape))

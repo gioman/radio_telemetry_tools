@@ -78,7 +78,7 @@ class mcp(AnimoveAlgorithm):
 
             for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[index]
-                if (fieldValue.strip() == value.strip()):
+                if (fieldValue == value):
                     points = extractPoints(feature.geometry())
                     cx += points[0].x()
                     cy += points[0].y()
@@ -91,7 +91,7 @@ class mcp(AnimoveAlgorithm):
             distanceGeometryMap = {}
             for feature in features(inputLayer):
                 fieldValue = self.getFeatureAttributes(feature)[index]
-                if (fieldValue.strip() == value.strip()):
+                if (fieldValue == value):
                     nElement += 1
                     geometry = QgsGeometry(feature.geometry())
                     distance = distArea.measureLine(meanPoint,
