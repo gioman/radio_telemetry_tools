@@ -21,7 +21,12 @@ Additionally, restricted Minimum Convex Polygons (MCP) are implemented, as:
 * MCP calculation of the smallest convex polygon enclosing all the relocations of the
 animal, excluding an user-selected percentage of locations furthest from a centre.
 
+**NOTE**: some of the bandwidth methods are only available with *scipy* 0.11 (custom
+bandwidth value) and *statsmodels* 0.5 (LSCV, maximum-likelihood
+cross-validation).
 
+**NOTE**: at least *scipy* 0.10 **and** the *gdal_contour* command must be installed in
+order to have the kernel density algorithm available.
 
 Support
 -------
