@@ -1,17 +1,21 @@
-This tutorial explains how to install the AniMove for QGIS plugin in a Windows system.
+This tutorial explains how to install the AniMove for QGIS plugin in a Windows system. 
+
+These instructions show how to install the plugin using the OSGeo4W installer. Due to some plugin 
+dependencies, it is necessary to install the 32bit version, since the 64bit version doesn't provide all 
+the required packages.
+
+If you install Quantum GIS using the standalone installer or the 64bit version of the OSGeo4W installer, 
+some options will not be available.
 
 Install Quantum GIS
 -------------------
 
-First you have to install Quantum GIS. We recommend to install it using the OSGeo4W installer:
+First you have to install Quantum GIS:
 
   http://hub.qgis.org/projects/quantum-gis/wiki/Download#12-OSGeo4W-Installer
   
-Please, make sure that you install *python-scipy*. This package is only available in the 32 bit version of the
-OSGeo4W installer.
-
-The AniMove plugin depends on *scipy* (>=0.11) and the standalone installer does not provide it.
-If you install Quantum GIS using the standalone installer, some options will not be available.
+Please, make sure that you install *python-scipy*. As explained above, this package is only available in the 
+32 bit version of the OSGeo4W installer.
 
 Download the plugin
 -------------------
