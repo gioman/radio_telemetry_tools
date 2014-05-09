@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import subprocess
 
@@ -6,14 +8,16 @@ from PyQt4 import QtGui
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingLog import ProcessingLog
 
-from mcp import mcp
-from kernelDensity import kernelDensity
+from sextante_animove.mcp import mcp
+from sextante_animove.kernelDensity import kernelDensity
 
 
 class animoveAlgorithmProvider(AlgorithmProvider):
 
     def __init__(self):
         AlgorithmProvider.__init__(self)
+        self.activate = False
+
         self.alglist = [mcp()]
 
         # Check scipy
@@ -44,6 +48,9 @@ class animoveAlgorithmProvider(AlgorithmProvider):
 
         if has_gdal_contour and (has_scipy or has_statsmodels):
             self.alglist.append(kernelDensity())
+
+        for alg in self.alglist:
+            alg.provider = self
 
     def getDescription(self):
         return "AniMove (MCP and Kernel analysis UD)"

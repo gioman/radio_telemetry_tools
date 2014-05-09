@@ -1,9 +1,14 @@
-from qgis.core import *
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import inspect
+
+from qgis.core import *
+
 from processing.core.Processing import Processing
-from animoveAlgorithmProvider import animoveAlgorithmProvider
+
+from sextante_animove.animoveAlgorithmProvider import animoveAlgorithmProvider
 
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
