@@ -54,3 +54,5 @@ and financially supported by:
 * Stefano Anile
 * Wildlife Conservation Research Unit (WildCRU), University of Oxford
 * Julia Hazel
+* Prof. António Mira (University of Évora, Portugal, Unidade de Biologia da
+  Conservação) and Dr. Rosana Peixoto
