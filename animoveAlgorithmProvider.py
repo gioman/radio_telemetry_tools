@@ -10,6 +10,7 @@ from processing.core.ProcessingLog import ProcessingLog
 
 from sextante_animove.mcp import mcp
 from sextante_animove.kernelDensity import kernelDensity
+from sextante_animove.RandomHR import RandomHR
 
 
 class animoveAlgorithmProvider(AlgorithmProvider):
@@ -18,7 +19,8 @@ class animoveAlgorithmProvider(AlgorithmProvider):
         AlgorithmProvider.__init__(self)
         self.activate = False
 
-        self.alglist = [mcp()]
+        self.alglist = [mcp(), RandomHR(),
+                       ]
 
         # Check scipy
         try:
