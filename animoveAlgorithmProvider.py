@@ -45,13 +45,6 @@ class animoveAlgorithmProvider(AlgorithmProvider):
         except:
             has_gdal_contour = False
 
-        ProcessingLog.addToLog(
-            ProcessingLog.LOG_INFO, 'Scipy found: %s' % has_scipy)
-        ProcessingLog.addToLog(
-            ProcessingLog.LOG_INFO, 'Statsmodels found: %s' % has_statsmodels)
-        ProcessingLog.addToLog(
-            ProcessingLog.LOG_INFO, 'gdal_contour found: %s' % has_gdal_contour)
-
         if has_gdal_contour and (has_scipy or has_statsmodels):
             self.alglist.append(kernelDensity())
 
