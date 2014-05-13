@@ -12,6 +12,7 @@ from processing.core.ProcessingConfig import Setting, ProcessingConfig
 from sextante_animove.mcp import mcp
 from sextante_animove.kernelDensity import kernelDensity
 from sextante_animove.RandomHR import RandomHR
+from sextante_animove.RandomPath import RandomPath
 
 
 class animoveAlgorithmProvider(AlgorithmProvider):
@@ -24,7 +25,7 @@ class animoveAlgorithmProvider(AlgorithmProvider):
 
         self.activate = False
 
-        self.alglist = [mcp(), RandomHR()]
+        self.alglist = [mcp(), RandomHR(), RandomPath()]
 
         # Check scipy
         try:
