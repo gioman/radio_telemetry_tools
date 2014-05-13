@@ -58,7 +58,7 @@ class RandomHR(GeoAlgorithm):
 
     def defineCharacteristics(self):
         self.name = 'Random HR'
-        self.group = 'Tools'
+        self.group = 'Random HR/Path'
 
         self.addParameter(ParameterVector(self.HR_LAYER,
             'Home ranges layer', [ParameterVector.VECTOR_TYPE_POLYGON]))

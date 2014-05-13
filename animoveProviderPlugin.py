@@ -7,7 +7,6 @@ import inspect
 from qgis.core import *
 
 from processing.core.Processing import Processing
-
 from sextante_animove.animoveAlgorithmProvider import animoveAlgorithmProvider
 
 
