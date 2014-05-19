@@ -65,7 +65,7 @@ class RandomPath(GeoAlgorithm):
             'Range for the random angles', '0,360'))
         self.addParameter(ParameterVector(self.OVERLAY_LAYER,
             'Overlay layer',[ParameterVector.VECTOR_TYPE_LINE,
-            ParameterVector.VECTOR_TYPE_POLYGON]))
+            ParameterVector.VECTOR_TYPE_POLYGON], optional=True))
 
         self.addOutput(OutputVector(self.RANDOM_PATHS, 'Random paths'))
 
@@ -77,8 +77,6 @@ class RandomPath(GeoAlgorithm):
         overlayLayer = dataobjects.getObjectFromUri(
             self.getParameterValue(self.OVERLAY_LAYER))
         angles = self.getParameterValue(self.ANGLE_RANGE)
-
-        progress.setInfo('is null ' +  str(overlayLayer))
 
         tmp = angles.split(',')
         minAngle = float(tmp[0])
@@ -100,7 +98,8 @@ class RandomPath(GeoAlgorithm):
                 'The study area layer should contain exactly one polygon or '
                 'multipolygon.')
 
-        index = vector.spatialindex(overlayLayer)
+        if overlayLayer is not None:
+            index = vector.spatialindex(overlayLayer)
 
         bbox = boundLayer.extent()
         extent = QgsGeometry().fromRect(bbox)
@@ -124,14 +123,15 @@ class RandomPath(GeoAlgorithm):
                 output = self._randomPath(points, bbox, extent, minAngle, maxAngle)
                 geom = QgsGeometry.fromPolyline(output)
 
-            rect = geom.boundingBox()
-            ids = index.intersects(rect)
             intersects = 0
-            for i in ids:
-                ft = overlayLayer.getFeatures(request.setFilterFid(i)).next()
-                tmpGeom = ft.geometry()
-                if geom.intersects(tmpGeom):
-                    intersects = 1
+            if overlayLayer is not None:
+                rect = geom.boundingBox()
+                ids = index.intersects(rect)
+                for i in ids:
+                    ft = overlayLayer.getFeatures(request.setFilterFid(i)).next()
+                    tmpGeom = ft.geometry()
+                    if geom.intersects(tmpGeom):
+                        intersects = 1
 
             f.setGeometry(geom)
             f.setAttribute('id', feature.id())
