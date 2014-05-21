@@ -267,7 +267,7 @@ class RandomHR(GeoAlgorithm):
         sepNumber = ProcessingConfig.getSetting('DECIMAL_SEPARATOR')
 
         with open(fileName, 'w') as f:
-            f.write('Quantum GIS Random Home Range summary\n')
+            f.write('QGIS Random Home Range summary\n')
             f.write('Frame layer%s%s\n' % (sepField, studyLayer.name()))
             f.write('Home ranges layer%s%s\n' % (sepField, hrLayer.name()))
             f.write('Number of the home ranges%s%s\n' % (sepField, hrLayer.featureCount()))
@@ -286,7 +286,7 @@ class RandomHR(GeoAlgorithm):
         sepNumber = ProcessingConfig.getSetting('DECIMAL_SEPARATOR')
 
         with open(fileName, 'w') as f:
-            f.write('Quantum GIS Random Home Range summary\n')
+            f.write('QGIS Random Home Range summary\n')
             f.write('Frame layer%s%s\n' % (sepField, studyLayer.name()))
             f.write('Home ranges layer%s%s\n' % (sepField, hrLayer.name()))
             f.write('Number of the home ranges%s%s\n' % (sepField, studyLayer.featureCount()))
