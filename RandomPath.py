@@ -35,13 +35,14 @@ from qgis.core import *
 
 from processing.core.Processing import Processing
 from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.core.ProcessingLog import ProcessingLog
+from processing.core.ProcessingConfig import ProcessingConfig
 from processing.core.GeoAlgorithmExecutionException import \
     GeoAlgorithmExecutionException
 from processing.parameters.ParameterVector import ParameterVector
 from processing.parameters.ParameterNumber import ParameterNumber
 from processing.parameters.ParameterRange import ParameterRange
 from processing.outputs.OutputVector import OutputVector
+from processing.outputs.OutputFile import OutputFile
 
 
 from processing.tools import dataobjects, vector
@@ -54,6 +55,7 @@ class RandomPath(GeoAlgorithm):
     ITERATIONS = 'ITERATIONS'
     OVERLAY_LAYER = 'OVERLAY_LAYER'
     RANDOM_PATHS = 'RANDOM_PATHS'
+    SUMMARY = 'SUMMARY'
 
     def defineCharacteristics(self):
         self.name = 'Random path'
@@ -72,6 +74,7 @@ class RandomPath(GeoAlgorithm):
             ParameterVector.VECTOR_TYPE_POLYGON], optional=True))
 
         self.addOutput(OutputVector(self.RANDOM_PATHS, 'Random paths'))
+        self.addOutput(OutputFile(self.SUMMARY, 'Summary'))
 
     def processAlgorithm(self, progress):
         pathsLayer = dataobjects.getObjectFromUri(
@@ -82,6 +85,8 @@ class RandomPath(GeoAlgorithm):
             self.getParameterValue(self.OVERLAY_LAYER))
         angles = self.getParameterValue(self.ANGLE_RANGE)
         iterations = int(self.getParameterValue(self.ITERATIONS))
+
+        summaryFile = self.getOutputValue(self.SUMMARY)
 
         tmp = angles.split(',')
         minAngle = float(tmp[0])
@@ -103,6 +108,16 @@ class RandomPath(GeoAlgorithm):
                 'The study area layer should contain exactly one polygon or '
                 'multipolygon.')
 
+        txt = 'QGIS Random Paths summary\n'
+        txt += 'Paths layer: %s\n' % pathsLayer.name()
+        txt += 'Number of paths: %s\n' % pathsLayer.featureCount()
+        txt += 'Frame layer: %s\n' % boundLayer.name()
+        txt += 'Overlay layer: %s\n' % overlayLayer.name()
+        txt += 'Number of iterations: %s\n\n' % iterations
+
+        sep = ProcessingConfig.getSetting('FIELD_SEPARATOR')
+        txt += 'iteration' + sep + 'feature id' + sep + 'intersects'
+
         if overlayLayer is not None:
             index = vector.spatialindex(overlayLayer)
 
@@ -110,7 +125,6 @@ class RandomPath(GeoAlgorithm):
         extent = QgsGeometry().fromRect(bbox)
 
         request = QgsFeatureRequest()
-
 
         total = 100.0 / iterations
 
@@ -144,7 +158,13 @@ class RandomPath(GeoAlgorithm):
                 f.setAttribute('intersect', intersects)
                 writer.addFeature(f)
                 output[:] = []
+
+                txt += 'iteration %s%s%s%s%s\n' % (i, sep, feature.id(), sep, intersects)
+
             progress.setPercentage(int((i + 1) * total))
+
+        with open(summaryFile, 'w') as f:
+            f.write(txt)
 
         del writer
 
@@ -162,34 +182,6 @@ class RandomPath(GeoAlgorithm):
         maxIterations = nPoints * 200
 
         da = QgsDistanceArea()
-        #~ while nIterations < maxIterations and len(output) < nPoints:
-            #~ for i in xrange(len(points) - 1):
-                #~ p0 = output[-1]
-                #~ p1 = points[i]
-                #~ p2 = points[i + 1]
-                #~ distance = da.measureLine(p1, p2)
-#~
-                #~ angle = minAngle + maxAngle * random.random()
-#~
-                #~ # correction for angles outside of 0 - 360
-                #~ while (angle > 360.0):
-                    #~ angle = angle - 360.0
-                #~ while (angle < 0.0):
-                    #~ angle = angle + 360.0
-#~
-                #~ angle = math.radians(angle)
-                #~ zen = math.radians(90)
-                #~ d = distance * math.sin(zen)
-                #~ x = p0.x() + d * math.sin(angle)
-                #~ y = p0.y() + d * math.cos(angle)
-#~
-                #~ pnt = QgsPoint(x, y)
-                #~ geom = QgsGeometry.fromPoint(pnt)
-                #~ if geom.within(extent):
-                    #~ output.append(pnt)
-#~
-                #~ nIterations += 1
-
         for i in xrange(len(points) - 1):
             p0 = output[-1]
             p1 = points[i]
@@ -216,11 +208,5 @@ class RandomPath(GeoAlgorithm):
                 if geom.within(extent):
                     output.append(pnt)
                     break
-
-        if len(output) < nPoints:
-             ProcessingLog.addToLog(
-                 ProcessingLog.LOG_INFO,
-                 'Can not generate random path. Maximum number of attempts '
-                 'exceeded.')
 
         return output
