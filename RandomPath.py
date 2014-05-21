@@ -54,6 +54,7 @@ class RandomPath(GeoAlgorithm):
     ANGLE_RANGE = 'ANGLE_RANGE'
     ITERATIONS = 'ITERATIONS'
     OVERLAY_LAYER = 'OVERLAY_LAYER'
+    POINTS_LAYER = 'POINTS_LAYER'
     RANDOM_PATHS = 'RANDOM_PATHS'
     SUMMARY = 'SUMMARY'
 
@@ -72,7 +73,8 @@ class RandomPath(GeoAlgorithm):
         self.addParameter(ParameterVector(self.OVERLAY_LAYER,
             'Overlay layer',[ParameterVector.VECTOR_TYPE_LINE,
             ParameterVector.VECTOR_TYPE_POLYGON], optional=True))
-
+        self.addParameter(ParameterVector(self.POINTS_LAYER,
+            'Points layer',[ParameterVector.VECTOR_TYPE_POINT], optional=True))
         self.addOutput(OutputVector(self.RANDOM_PATHS, 'Random paths'))
         self.addOutput(OutputFile(self.SUMMARY, 'Summary'))
 
@@ -83,6 +85,8 @@ class RandomPath(GeoAlgorithm):
             self.getParameterValue(self.BOUND_LAYER))
         overlayLayer = dataobjects.getObjectFromUri(
             self.getParameterValue(self.OVERLAY_LAYER))
+        pointsLayer = dataobjects.getObjectFromUri(
+            self.getParameterValue(self.POINTS_LAYER))
         angles = self.getParameterValue(self.ANGLE_RANGE)
         iterations = int(self.getParameterValue(self.ITERATIONS))
 
@@ -108,6 +112,13 @@ class RandomPath(GeoAlgorithm):
                 'The study area layer should contain exactly one polygon or '
                 'multipolygon.')
 
+        startPoints = []
+        if pointsLayer is not None:
+            features = vector.features(pointsLayer)
+            for feature in features:
+                geom = QgsGeometry(feature.geometry())
+                startPoints.append(geom.asPoint())
+
         txt = 'QGIS Random Paths summary\n'
         txt += 'Paths layer: %s\n' % pathsLayer.name()
         txt += 'Number of paths: %s\n' % pathsLayer.featureCount()
@@ -128,19 +139,27 @@ class RandomPath(GeoAlgorithm):
 
         total = 100.0 / iterations
 
+        pid = 0
+        p = None
         output = []
         for i in xrange(iterations):
             features = vector.features(pathsLayer)
             for feature in features:
+
+                if pointsLayer is not None:
+                    if pid > len(startPoints) - 1:
+                        pid = 0
+                    p = startPoints[pid]
+
                 geom = feature.geometry()
                 if geom.isMultipart():
                     lines = geom.asMultiPolyline()
                     for points in lines:
-                        output.append(self._randomPath(points, bbox, extent, minAngle, maxAngle))
+                        output.append(self._randomPath(p, points, bbox, extent, minAngle, maxAngle))
                     geom = QgsGeometry.fromMultiPolyline(output)
                 else:
                     points = geom.asPolyline()
-                    output = self._randomPath(points, bbox, extent, minAngle, maxAngle)
+                    output = self._randomPath(p, points, bbox, extent, minAngle, maxAngle)
                     geom = QgsGeometry.fromPolyline(output)
 
                 intersects = 0
@@ -158,6 +177,7 @@ class RandomPath(GeoAlgorithm):
                 f.setAttribute('intersect', intersects)
                 writer.addFeature(f)
                 output[:] = []
+                pid += 1
 
                 txt += 'iteration %s%s%s%s%s\n' % (i, sep, feature.id(), sep, intersects)
 
@@ -168,18 +188,20 @@ class RandomPath(GeoAlgorithm):
 
         del writer
 
-    def _randomPath(self, points, bbox, extent, minAngle, maxAngle):
+    def _randomPath(self, p, points, bbox, extent, minAngle, maxAngle):
         random.seed()
         output = []
         rx = bbox.xMinimum() + bbox.width() * random.random()
         ry = bbox.yMinimum() + bbox.height() * random.random()
         pnt = QgsPoint(rx, ry)
 
-        output.append(pnt)
+        if p is not None:
+            output.append(p)
+        else:
+            output.append(pnt)
 
         nIterations = 0
         nPoints = len(points)
-        maxIterations = nPoints * 200
 
         da = QgsDistanceArea()
         for i in xrange(len(points) - 1):
