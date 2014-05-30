@@ -44,11 +44,11 @@ The plugin was developed by:
 * Jorge Arévalo ([geomati.co](http://geomati.co))
 * Francesco Boccacci
 * Víctor González ([geomati.co](http://geomati.co))
+* Alexander Bruy for Faunalia ([faunalia.eu](http://www.faunalia.eu))
 
 and financially supported by:
 
 * Marco Zaccaroni - Department of Biology, University of Firenze
-* António Mira
 * Dimitris Poursanidis
 * Giovanni Manghi
 * Stefano Anile
