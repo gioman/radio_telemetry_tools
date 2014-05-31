@@ -41,6 +41,7 @@ from processing.core.GeoAlgorithmExecutionException import \
 from processing.parameters.ParameterVector import ParameterVector
 from processing.parameters.ParameterNumber import ParameterNumber
 from processing.parameters.ParameterRange import ParameterRange
+from processing.parameters.ParameterBoolean import ParameterBoolean
 from processing.outputs.OutputVector import OutputVector
 from processing.outputs.OutputFile import OutputFile
 
@@ -55,6 +56,7 @@ class RandomPath(GeoAlgorithm):
     ITERATIONS = 'ITERATIONS'
     OVERLAY_LAYER = 'OVERLAY_LAYER'
     POINTS_LAYER = 'POINTS_LAYER'
+    KEEP_START_POINTS = 'KEEP_START_POINTS'
     RANDOM_PATHS = 'RANDOM_PATHS'
     SUMMARY = 'SUMMARY'
 
@@ -73,6 +75,8 @@ class RandomPath(GeoAlgorithm):
         self.addParameter(ParameterVector(self.OVERLAY_LAYER,
             'Overlay layer',[ParameterVector.VECTOR_TYPE_LINE,
             ParameterVector.VECTOR_TYPE_POLYGON], optional=True))
+        self.addParameter(ParameterBoolean(self.KEEP_START_POINTS,
+            'Use start points from original path', False))
         self.addParameter(ParameterVector(self.POINTS_LAYER,
             'Points layer',[ParameterVector.VECTOR_TYPE_POINT], optional=True))
         self.addOutput(OutputVector(self.RANDOM_PATHS, 'Random paths'))
@@ -89,6 +93,7 @@ class RandomPath(GeoAlgorithm):
             self.getParameterValue(self.POINTS_LAYER))
         angles = self.getParameterValue(self.ANGLE_RANGE)
         iterations = int(self.getParameterValue(self.ITERATIONS))
+        keepStart = self.getParameterValue(self.KEEP_START_POINTS)
 
         summaryFile = self.getOutputValue(self.SUMMARY)
 
@@ -113,7 +118,7 @@ class RandomPath(GeoAlgorithm):
                 'multipolygon.')
 
         startPoints = []
-        if pointsLayer is not None:
+        if not keepStart and pointsLayer is not None:
             features = vector.features(pointsLayer)
             for feature in features:
                 geom = QgsGeometry(feature.geometry())
@@ -123,7 +128,8 @@ class RandomPath(GeoAlgorithm):
         txt += 'Paths layer: %s\n' % pathsLayer.name()
         txt += 'Number of paths: %s\n' % pathsLayer.featureCount()
         txt += 'Frame layer: %s\n' % boundLayer.name()
-        txt += 'Overlay layer: %s\n' % overlayLayer.name()
+        if overlayLayer is not None:
+            txt += 'Overlay layer: %s\n' % overlayLayer.name()
         txt += 'Number of iterations: %s\n\n' % iterations
 
         sep = ProcessingConfig.getSetting('FIELD_SEPARATOR')
@@ -146,7 +152,7 @@ class RandomPath(GeoAlgorithm):
             features = vector.features(pathsLayer)
             for feature in features:
 
-                if pointsLayer is not None:
+                if not keepStart and pointsLayer is not None:
                     if pid > len(startPoints) - 1:
                         pid = 0
                     p = startPoints[pid]
@@ -155,10 +161,14 @@ class RandomPath(GeoAlgorithm):
                 if geom.isMultipart():
                     lines = geom.asMultiPolyline()
                     for points in lines:
+                        if keepStart:
+                            p = points[0]
                         output.append(self._randomPath(p, points, bbox, extent, minAngle, maxAngle))
                     geom = QgsGeometry.fromMultiPolyline(output)
                 else:
                     points = geom.asPolyline()
+                    if keepStart:
+                        p = points[0]
                     output = self._randomPath(p, points, bbox, extent, minAngle, maxAngle)
                     geom = QgsGeometry.fromPolyline(output)
 
