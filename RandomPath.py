@@ -57,6 +57,7 @@ class RandomPath(GeoAlgorithm):
     OVERLAY_LAYER = 'OVERLAY_LAYER'
     POINTS_LAYER = 'POINTS_LAYER'
     KEEP_START_POINTS = 'KEEP_START_POINTS'
+    KEEP_ANGLES = 'KEEP_ANGLES'
     RANDOM_PATHS = 'RANDOM_PATHS'
     SUMMARY = 'SUMMARY'
 
@@ -77,6 +78,8 @@ class RandomPath(GeoAlgorithm):
             ParameterVector.VECTOR_TYPE_POLYGON], optional=True))
         self.addParameter(ParameterBoolean(self.KEEP_START_POINTS,
             'Use start points from original path', False))
+        self.addParameter(ParameterBoolean(self.KEEP_ANGLES,
+            'Keep angles between points same as in original path', False))
         self.addParameter(ParameterVector(self.POINTS_LAYER,
             'Points layer',[ParameterVector.VECTOR_TYPE_POINT], optional=True))
         self.addOutput(OutputVector(self.RANDOM_PATHS, 'Random paths'))
@@ -94,6 +97,7 @@ class RandomPath(GeoAlgorithm):
         angles = self.getParameterValue(self.ANGLE_RANGE)
         iterations = int(self.getParameterValue(self.ITERATIONS))
         keepStart = self.getParameterValue(self.KEEP_START_POINTS)
+        keepAngles = self.getParameterValue(self.KEEP_ANGLES)
 
         summaryFile = self.getOutputValue(self.SUMMARY)
 
@@ -163,13 +167,13 @@ class RandomPath(GeoAlgorithm):
                     for points in lines:
                         if keepStart:
                             p = points[0]
-                        output.append(self._randomPath(p, points, bbox, extent, minAngle, maxAngle))
+                        output.append(self._randomPath(p, points, bbox, extent, minAngle, maxAngle, keepAngles))
                     geom = QgsGeometry.fromMultiPolyline(output)
                 else:
                     points = geom.asPolyline()
                     if keepStart:
                         p = points[0]
-                    output = self._randomPath(p, points, bbox, extent, minAngle, maxAngle)
+                    output = self._randomPath(p, points, bbox, extent, minAngle, maxAngle, keepAngles)
                     geom = QgsGeometry.fromPolyline(output)
 
                 intersects = 0
@@ -198,7 +202,7 @@ class RandomPath(GeoAlgorithm):
 
         del writer
 
-    def _randomPath(self, p, points, bbox, extent, minAngle, maxAngle):
+    def _randomPath(self, p, points, bbox, extent, minAngle, maxAngle, keepAngles):
         random.seed()
         output = []
         rx = bbox.xMinimum() + bbox.width() * random.random()
@@ -220,16 +224,8 @@ class RandomPath(GeoAlgorithm):
             p2 = points[i + 1]
             distance = da.measureLine(p1, p2)
 
-            while True:
-                angle = minAngle + maxAngle * random.random()
-
-                # correction for angles outside of 0 - 360
-                while (angle > 360.0):
-                    angle = angle - 360.0
-                while (angle < 0.0):
-                    angle = angle + 360.0
-
-                angle = math.radians(angle)
+            if keepAngles:
+                angle = math.radians(p1.azimuth(p2))
                 zen = math.radians(90)
                 d = distance * math.sin(zen)
                 x = p0.x() + d * math.sin(angle)
@@ -237,8 +233,27 @@ class RandomPath(GeoAlgorithm):
 
                 pnt = QgsPoint(x, y)
                 geom = QgsGeometry.fromPoint(pnt)
-                if geom.within(extent):
-                    output.append(pnt)
-                    break
+                output.append(pnt)
+            else:
+                while True:
+                    angle = minAngle + maxAngle * random.random()
+
+                    # correction for angles outside of 0 - 360
+                    while (angle > 360.0):
+                        angle = angle - 360.0
+                    while (angle < 0.0):
+                        angle = angle + 360.0
+
+                    angle = math.radians(angle)
+                    zen = math.radians(90)
+                    d = distance * math.sin(zen)
+                    x = p0.x() + d * math.sin(angle)
+                    y = p0.y() + d * math.cos(angle)
+
+                    pnt = QgsPoint(x, y)
+                    geom = QgsGeometry.fromPoint(pnt)
+                    if geom.within(extent):
+                        output.append(pnt)
+                        break
 
         return output
