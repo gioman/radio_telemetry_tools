@@ -33,6 +33,18 @@ cross-validation).
 **NOTE**: at least *scipy* 0.10 **and** the *gdal_contour* command must be
 installed in order to have the kernel density algorithm available.
 
+Since version 1.4.0 the plugin adds new functionalities:
+
+* A porting to the Processing toolbox of the "RandomHR" plugin 
+(Randomization of home ranges within a study area, see http://plugins.qgis.org/plugins/randomHR/) 
+that was previously available for QGIS 1.x but not for 2.x
+
+* A new tool called "Random path" that allows to randomize paths (lines) with many options: 
+keep angles, randomize angles (range as user choice), randomize starting points, 
+keep starting points, use a point layer for starting points, 
+check if the random path crosses features of a specified line/polygon layer.
+
+
 Support
 -------
 
@@ -55,4 +67,5 @@ and financially supported by:
 * Wildlife Conservation Research Unit (WildCRU), University of Oxford
 * Julia Hazel
 * Prof. António Mira (University of Évora, Portugal, Unidade de Biologia da
-  Conservação) and Dr. Rosana Peixoto
+  Conservação)
+* Dr. Rosana Peixoto PhD

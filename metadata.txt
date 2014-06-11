@@ -1,21 +1,21 @@
 [general]
 name=AniMove for QGIS
 description=Tools for animal movements analysis
-about=MCP and Kernel functions for UD - supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), António Mira, Dimitris Poursanidis, Giovanni Manghi, Stefano Anile, WildCRU (University of Oxford) and Julia Hazel.
-version=1.3.4
+about=MCP and Kernel functions for UD. Randomization of home ranges and animal paths within a study area. Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), Prof. António Mira (University of Évora, Portugal, Unidade de Biologia da Conservação), Dr. Rosana Peixoto PhD, Dimitris Poursanidis, Giovanni Manghi, Stefano Anile, WildCRU (University of Oxford) and Julia Hazel. Developed by Francesco Boccacci, Víctor González and by Alexander Bruy for Faunalia (http://www.faunalia.eu/).
+version=1.4.0
 qgisMinimumVersion=2.0
 
-email=francescoboccacci@libero.it
-author=Francesco Boccacci
+email=alexander.bruy@gmail.com
+author=Francesco Boccacci, Víctor González, Alexander Bruy
 
 category=Analysis
 
 icon=icons/animalmove.png
-tags=analysis, kernel
+tags=analysis, kernel, home range, paths, animal movements
 
-homepage=http://www.faunalia.it/animove
+homepage=http://www.faunalia.eu/animove
 tracker=http://hub.qgis.org/projects/animoveforsextante
-repository=https://github.com/geomatico/sextante_animove
+repository=https://github.com/alexbruy/sextante_animove
 
 experimental=True
 deprecated=False
