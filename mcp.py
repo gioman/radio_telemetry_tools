@@ -135,7 +135,7 @@ class mcp(AnimoveAlgorithm):
                 "Feature exception while computing convex hull")
 
     def defineCharacteristics(self):
-        self.name = "Minimun Convex Polygon"
+        self.name = "Minimum Convex Polygon"
         self.group = "Tools"
         self.addParameter(ParameterVector(mcp.INPUT, "Input layer",
                             ParameterVector.VECTOR_TYPE_POINT))
