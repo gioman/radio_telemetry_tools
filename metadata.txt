@@ -2,7 +2,7 @@
 name=AniMove for QGIS
 description=Tools for animal movements analysis
 about=MCP and Kernel functions for UD. Randomization of home ranges and animal paths within a study area. Supported by Faunalia, Marco Zaccaroni (Department of Biology, University of Firenze), Prof. António Mira (University of Évora, Portugal, Unidade de Biologia da Conservação), Dr. Rosana Peixoto PhD, Dimitris Poursanidis, Giovanni Manghi, Stefano Anile, WildCRU (University of Oxford) and Julia Hazel. Developed by Francesco Boccacci, Víctor González and by Alexander Bruy for Faunalia (http://www.faunalia.eu/).
-version=1.4.0
+version=1.4.1
 qgisMinimumVersion=2.0
 
 email=alexander.bruy@gmail.com
