@@ -21,13 +21,22 @@ except:
     extractPoints = FToolsUtils.extractPoints
 
 from processing.core.ProcessingLog import ProcessingLog
-from processing.parameters.ParameterBoolean import ParameterBoolean
-from processing.parameters.ParameterNumber import ParameterNumber
-from processing.parameters.ParameterVector import ParameterVector
-from processing.parameters.ParameterSelection import ParameterSelection
-from processing.parameters.ParameterTableField import ParameterTableField
-from processing.outputs.OutputVector import OutputVector
-from processing.outputs.OutputRaster import OutputRaster
+try:
+    from processing.parameters.ParameterBoolean import ParameterBoolean
+    from processing.parameters.ParameterNumber import ParameterNumber
+    from processing.parameters.ParameterVector import ParameterVector
+    from processing.parameters.ParameterSelection import ParameterSelection
+    from processing.parameters.ParameterTableField import ParameterTableField
+    from processing.outputs.OutputVector import OutputVector
+    from processing.outputs.OutputRaster import OutputRaster
+except:
+    from processing.core.parameters import ParameterBoolean
+    from processing.core.parameters import ParameterNumber
+    from processing.core.parameters import ParameterVector
+    from processing.core.parameters import ParameterSelection
+    from processing.core.parameters import ParameterTableField
+    from processing.core.outputs import OutputVector
+    from processing.core.outputs import OutputRaster
 
 import numpy as np
 from osgeo import gdal, osr

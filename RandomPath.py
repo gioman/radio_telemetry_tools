@@ -38,12 +38,21 @@ from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.core.ProcessingConfig import ProcessingConfig
 from processing.core.GeoAlgorithmExecutionException import \
     GeoAlgorithmExecutionException
-from processing.parameters.ParameterVector import ParameterVector
-from processing.parameters.ParameterNumber import ParameterNumber
-from processing.parameters.ParameterRange import ParameterRange
-from processing.parameters.ParameterBoolean import ParameterBoolean
-from processing.outputs.OutputVector import OutputVector
-from processing.outputs.OutputFile import OutputFile
+
+try:
+    from processing.parameters.ParameterVector import ParameterVector
+    from processing.parameters.ParameterNumber import ParameterNumber
+    from processing.parameters.ParameterRange import ParameterRange
+    from processing.parameters.ParameterBoolean import ParameterBoolean
+    from processing.outputs.OutputVector import OutputVector
+    from processing.outputs.OutputFile import OutputFile
+except:
+    from processing.core.parameters import ParameterVector
+    from processing.core.parameters import ParameterNumber
+    from processing.core.parameters import ParameterRange
+    from processing.core.parameters import ParameterBoolean
+    from processing.core.outputs import OutputVector
+    from processing.core.outputs import OutputFile
 
 
 from processing.tools import dataobjects, vector

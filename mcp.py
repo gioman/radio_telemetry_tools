@@ -20,9 +20,14 @@ except:
     extractPoints = FToolsUtils.extractPoints
 
 from processing.core.ProcessingLog import ProcessingLog
-from processing.parameters.ParameterTableField import ParameterTableField
-from processing.parameters.ParameterNumber import ParameterNumber
-from processing.outputs.OutputVector import OutputVector
+try:
+    from processing.parameters.ParameterTableField import ParameterTableField
+    from processing.parameters.ParameterNumber import ParameterNumber
+    from processing.outputs.OutputVector import OutputVector
+except:
+    from processing.core.parameters import ParameterTableField
+    from processing.core.parameters import ParameterNumber
+    from processing.core.outputs import OutputVector
 
 
 class mcp(AnimoveAlgorithm):
