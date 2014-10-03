@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from animoveAlgorithm import AnimoveAlgorithm
-from processing.parameters.ParameterVector import ParameterVector
+
 try:
     # QGIS 2.2
     from processing.tools.vector import features, getUniqueValues, extractPoints
@@ -21,10 +21,12 @@ except:
 
 from processing.core.ProcessingLog import ProcessingLog
 try:
+    from processing.parameters.ParameterVector import ParameterVector
     from processing.parameters.ParameterTableField import ParameterTableField
     from processing.parameters.ParameterNumber import ParameterNumber
     from processing.outputs.OutputVector import OutputVector
 except:
+    from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterTableField
     from processing.core.parameters import ParameterNumber
     from processing.core.outputs import OutputVector
