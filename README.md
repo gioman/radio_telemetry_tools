@@ -88,7 +88,9 @@ Since version 1.4.0 the plugin adds new functionalities:
 * Launch the commands
 
     `pip install pandas`
+    
     `pip install statsmodels`
+    
     `pip install numpy --upgrade`
     
 ### Installing the plugin
