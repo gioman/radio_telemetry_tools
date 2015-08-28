@@ -67,29 +67,29 @@ Since version 1.4.0 the plugin adds new functionalities:
 
 * On Ubuntu 14.04 (and derived distributions) and above:
 
-    sudo apt-get install python-scipy python-numpy python-pandas python-statsmodels
+    `sudo apt-get install python-scipy python-numpy python-pandas python-statsmodels`
 
 #### On MS Windows:
 
-* Install QGIS with the OSGeo4W installer () follwing the "advanced install" method
+* Install QGIS with the OSGeo4W installer (https://trac.osgeo.org/osgeo4w/) follwing the "advanced install" method
 
 * Among the available (optional) libraries install "python-scipy" and "pyton-numpy"
 
 * After the installation of QGIS save the following script (and .py file, not .txt) inside the "C:\OSGeo4W\apps\Python27" folder
 
-    https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+    `https://raw.github.com/pypa/pip/master/contrib/get-pip.py`
     
 * Open the "OSGeo4W" shell
 
 * Launch the command 
 
-    python c:\OSGeo4W\apps\Python27\get-pip.py
+    `python c:\OSGeo4W\apps\Python27\get-pip.py`
     
 * Launch the commands
 
-    pip install pandas
-    pip install statsmodels
-    pip install numpy --upgrade
+    `pip install pandas`
+    `pip install statsmodels`
+    `pip install numpy --upgrade`
     
 ### Installing the plugin
 
