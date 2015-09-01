@@ -73,7 +73,7 @@ class animoveAlgorithmProvider(AlgorithmProvider):
         return 'AniMove'
 
     def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/animalmove.png')
+        return  QIcon(os.path.dirname(__file__) + '/icons/radiotelemetry.png')
 
     def _loadAlgorithms(self):
         self.algs = self.alglist

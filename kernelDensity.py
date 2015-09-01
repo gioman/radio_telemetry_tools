@@ -93,7 +93,7 @@ class kernelDensity(AnimoveAlgorithm):
 
     def getIcon(self):
         return QtGui.QIcon(os.path.dirname(__file__)
-                           + "/icons/kernelDensity.png")
+                           + "/icons/kernel.png")
 
     def processAlgorithm(self, progress):
         currentPath = os.path.dirname(os.path.abspath(__file__))

@@ -49,7 +49,7 @@ Utilization distribution and contour lines are produced, and area of the contour
 
 * calculation of the smallest convex polygon enclosing all the relocations of the animal, excluding an user-selected percentage of locations furthest from a centre.
 
-Since version 1.4.0 the plugin adds new functionalities:
+At some point in the development of this tools the following functionalities have been added:
 
 * A porting to the Processing toolbox of the "RandomHR" plugin (Randomization of home ranges within a study area, see http://plugins.qgis.org/plugins/randomHR/) that was previously available for QGIS 1.x but not for 2.x
 
@@ -75,7 +75,7 @@ Since version 1.4.0 the plugin adds new functionalities:
 
 * Among the available (optional) libraries install "python-scipy" and "pyton-numpy"
 
-* After the installation of QGIS save the following script (and .py file, not .txt) inside the "C:\OSGeo4W\apps\Python27" folder
+* After the installation of QGIS save the following script (as ".py" file, not ".txt") inside the "C:\OSGeo4W\apps\Python27" folder
 
     `https://raw.github.com/pypa/pip/master/contrib/get-pip.py`
     
@@ -93,6 +93,10 @@ Since version 1.4.0 the plugin adds new functionalities:
     
     `pip install numpy --upgrade`
     
-### Installing the plugin
+* If you are having troubles/errors while running the above commands then download and install first
+
+    http://www.microsoft.com/en-us/download/details.aspx?id=44266
+    
+## Installing the plugin
 
 * Use the "Manage and Install plugins" tools in QGIS
